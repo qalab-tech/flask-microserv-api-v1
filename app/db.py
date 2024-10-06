@@ -6,7 +6,7 @@ from app.logger_config import setup_logger
 logger = setup_logger("db_connection")
 
 # Creating connection pool for Postgres
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://customers_user:MBVf3JDWSsupmsV9LQf19YfuFIE5Nbpf@dpg-crpa9dqj1k6c73c2jt3g-a.oregon-postgres.render.com/customers_jxqa")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 try:
     connection_pool = psycopg2.pool.SimpleConnectionPool(1, 20, DATABASE_URL)
