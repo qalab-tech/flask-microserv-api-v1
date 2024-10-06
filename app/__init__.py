@@ -1,4 +1,3 @@
-# /app/__init__.py
 from flask import Flask
 from app.controllers.customer_controller import customer_bp
 
