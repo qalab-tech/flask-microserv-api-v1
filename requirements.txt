@@ -1,0 +1,11 @@
+gunicorn
+faker
+flask
+locust
+psycopg2-binary
+pyyaml
+flask-sqlalchemy
+pytest
+requests
+pytest-xdist
+pytest-html
