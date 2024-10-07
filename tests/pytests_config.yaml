@@ -1,4 +1,2 @@
 # Pytests Config
-Base Application URL:
-  http://localhost:5000/api/v1/customers
-# http://flask-microservice-for-pipeline.onrender.com/customers
+Base Application URL:  "http://localhost:5000/api/v1/customers"
