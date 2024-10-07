@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from psycopg2.extras import RealDictCursor
 
-from app.db import get_db_connection
+from app.db import get_db_connection, release_db_connection
 from app.services.customer_service import get_customers, update_customer
 from app.logger_config import setup_logger
 
@@ -134,8 +134,9 @@ def delete_customer_route(customer_id):
     deleted_customer_id = cursor.fetchone()
     connection.commit()
     cursor.close()
-    connection.close()
     release_db_connection(connection)
+    connection.close()
+
 
     if deleted_customer_id:
         logger.info(f"Customer deleted: ID={customer_id}")
