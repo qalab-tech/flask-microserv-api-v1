@@ -11,7 +11,7 @@ def get_all_customers():
     cursor.execute("SELECT * FROM customers")
     customers = cursor.fetchall()
     release_db_connection(connection)
-    connection.close()
+    # connection.close()
     logger.info(f"Retrieved {len(customers)} customers")
     return customers
 
