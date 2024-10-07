@@ -1,5 +1,5 @@
 # /app/services/customer_service.py
-from app.repositories.customer_repository import get_all_customers, update_customer_db, create_customer_db
+from app.repositories.customer_repository import get_all_customers, update_customer_db #create_customer_db
 from app.logger_config import setup_logger
 
 logger = setup_logger("customer_service")
