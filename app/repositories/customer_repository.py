@@ -24,3 +24,8 @@ def update_customer_db(customer_id, data):
         logger.info(f"Customer's address updated successfully, new address is {data['address']}")
     connection.commit()
     connection.close()
+
+
+# def create_customer_db():
+#     return None
+"""TO-DO!"""

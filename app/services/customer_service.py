@@ -29,21 +29,21 @@ def update_customer(customer_id, data):
         return {"error": "Update failed"}, 500
 
 
-def create_customer(data):
-    # Data validation before creation
-    validation_error = validate_customer_data(data)
-    if validation_error:
-        logger.error(f"Creation error: {validation_error}")
-        return {"error": validation_error}, 400
-
-    # Creation logic
-    result = create_customer_db(data)
-    if result:
-        logger.info(f"Customer created successfully")
-        return result
-    else:
-        logger.error(f"Customer creation failed")
-        return {"error": "Creation failed"}, 500
+# def create_customer(data):
+#     # Data validation before creation
+#     validation_error = validate_customer_data(data)
+#     if validation_error:
+#         logger.error(f"Creation error: {validation_error}")
+#         return {"error": validation_error}, 400
+#
+#     # Creation logic
+#     result = create_customer_db(data)
+#     if result:
+#         logger.info(f"Customer created successfully")
+#         return result
+#     else:
+#         logger.error(f"Customer creation failed")
+#         return {"error": "Creation failed"}, 500
 
 
 def validate_customer_data(data):
