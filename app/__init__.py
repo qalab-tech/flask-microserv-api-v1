@@ -1,12 +1,16 @@
 from flask import Flask
-from app.controllers.customer_controller import customer_bp  # Импортируем Blueprints
+from app.controllers.customer_controller import customer_bp
 
 def create_app():
     app = Flask(__name__)
 
-    # Регистрируем Blueprints
-    app.register_blueprint(customer_bp, url_prefix='/api/v1/customers')  # Префикс можно установить здесь
+    # Register BluePrint
+    app.register_blueprint(customer_bp, url_prefix='/api/v1/customers')
 
     return app
+
+# Export env variable app for Gunicorn
+app = create_app()
+
 
 
