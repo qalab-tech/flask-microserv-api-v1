@@ -12,11 +12,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # COPY other files to Docker container
 COPY . .
 
-# Expose port 5000 for our microservice application
-EXPOSE 5000
+# Expose port 5001 for our microservice application
+EXPOSE 5001
 
 # Running our Flask app with Gunicorn (Production Mode)
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5001", "app:app"]
 
 
 
