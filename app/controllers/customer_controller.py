@@ -135,6 +135,7 @@ def delete_customer_route(customer_id):
     connection.commit()
     cursor.close()
     connection.close()
+    release_db_connection(connection)
 
     if deleted_customer_id:
         logger.info(f"Customer deleted: ID={customer_id}")
