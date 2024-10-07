@@ -1,5 +1,3 @@
-# /app/controllers/customer_controller.py
-from crypt import methods
 from flask import Blueprint, jsonify, request
 from psycopg2.extras import RealDictCursor
 
@@ -10,14 +8,13 @@ from app.logger_config import setup_logger
 logger = setup_logger("customer_controller")
 customer_bp = Blueprint('customers', __name__)
 
-
-@customer_bp.route('/api/v1/customers', methods=['GET'])
+@customer_bp.route('/', methods=['GET'])
 def get_customers_route():
     """GET all customers"""
     return jsonify(get_customers())
 
 # Read customer by ID
-@customer_bp.route('/api/v1/customers/<int:customer_id>', methods=['GET'])
+@customer_bp.route('/<int:customer_id>', methods=['GET'])
 def get_customer_route(customer_id):
     """GET customer by customer_id"""
     connection = get_db_connection()
@@ -33,8 +30,7 @@ def get_customer_route(customer_id):
         logger.warning(f"Customer not found: ID={customer_id}")
         return jsonify({"error": "Customer not found"}), 404
 
-
-@customer_bp.route('/api/v1/customers', methods=['POST'])
+@customer_bp.route('/', methods=['POST'])
 def create_new_customer():
     """Create new customer"""
     data = request.json
@@ -56,7 +52,7 @@ def create_new_customer():
     logger.info(f"Customer created: ID={customer_id}, Name={name}, Address={address}")
     return jsonify({"customer_id": customer_id, "name": name, "address": address}), 201
 
-@customer_bp.route('/api/v1/customers/<int:customer_id>', methods=['PATCH'])
+@customer_bp.route('/<int:customer_id>', methods=['PATCH'])
 def patch_customer_route(customer_id):
     """PATCH (partial update) method implementation"""
     data = request.json
@@ -101,8 +97,7 @@ def patch_customer_route(customer_id):
         logger.warning(f"Customer not found for update: ID={customer_id}")
         return jsonify({"error": "Customer not found"}), 404
 
-
-@customer_bp.route('/api/v1/customers/<int:customer_id>', methods=['PUT'])
+@customer_bp.route('/<int:customer_id>', methods=['PUT'])
 def update_customer_route(customer_id):
     """Update customer"""
     data = request.json
@@ -130,8 +125,7 @@ def update_customer_route(customer_id):
         logger.warning(f"Customer not found for update: ID={customer_id}")
         return jsonify({"error": "Customer not found"}), 404
 
-
-@customer_bp.route('/api/v1/customers/<int:customer_id>', methods=['DELETE'])
+@customer_bp.route('/<int:customer_id>', methods=['DELETE'])
 def delete_customer_route(customer_id):
     """DELETE method"""
     connection = get_db_connection()
