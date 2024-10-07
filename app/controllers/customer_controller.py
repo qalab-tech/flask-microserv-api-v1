@@ -88,6 +88,7 @@ def patch_customer_route(customer_id):
     updated_customer_id = cursor.fetchone()
     connection.commit()
     cursor.close()
+    release_db_connection(connection)
     connection.close()
 
     if updated_customer_id:
@@ -116,6 +117,7 @@ def update_customer_route(customer_id):
     updated_customer_id = cursor.fetchone()
     connection.commit()
     cursor.close()
+    release_db_connection(connection)
     connection.close()
 
     if updated_customer_id:
