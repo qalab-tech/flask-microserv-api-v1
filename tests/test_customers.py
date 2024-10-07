@@ -73,9 +73,9 @@ def test_update_customer(new_customer):
     assert customer["name"] == updated_data["name"]
     assert customer["address"] == updated_data["address"]
 
-def test_delete_customer(new_customer):
+def test_delete_customer():
     # Test Delete Customer
-    customer_id = new_customer["customer_id"]
+    customer_id = str(randrange(1, 1000))
     response = requests.delete(f"{BASE_URL}/{customer_id}")
     assert response.status_code == 200
     assert response.json()["message"] == "Customer deleted"
