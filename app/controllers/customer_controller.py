@@ -132,6 +132,7 @@ def delete_customer_route(customer_id):
     """DELETE method"""
     connection = None
     cursor = None
+    success = False
 
     try:
         connection = get_db_connection()
@@ -142,21 +143,27 @@ def delete_customer_route(customer_id):
 
         if deleted_customer_id:
             connection.commit()
+            success = True
             logger.info(f"Customer deleted: ID={customer_id}")
             return jsonify({"message": "Customer deleted"}), 200
         else:
-            connection.rollback()  # rollback if nothing was deleted
             logger.warning(f"Customer not found for deletion: ID={customer_id}")
             return jsonify({"error": "Customer not found"}), 404
 
     except Exception as e:
-        if connection:
-            connection.rollback()  # Rollback in case of any error
         logger.error(f"Error deleting customer: {str(e)}")
+        if connection:  # Проверяем, было ли успешно установлено соединение
+            connection.rollback()  # Откатываем изменения, если что-то пошло не так
+            logger.error("Rollback performed due to an error.")
+
         return jsonify({"error": "Internal Server Error"}), 500
 
     finally:
         if cursor:
             cursor.close()
         if connection:
-            release_db_connection(connection)  # return connection to pool
+            if success:
+                release_db_connection(connection)  # Возвращаем соединение в пул, только если операция прошла успешно
+            else:
+                # Если операция не прошла успешно, не возвращаем соединение в пул, чтобы избежать использования закрытого соединения
+                logger.warning("Connection not returned to pool because of a failure.")
