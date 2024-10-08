@@ -130,19 +130,33 @@ def update_customer_route(customer_id):
 @customer_bp.route('/<int:customer_id>', methods=['DELETE'])
 def delete_customer_route(customer_id):
     """DELETE method"""
-    connection = get_db_connection()
-    cursor = connection.cursor()
-    cursor.execute("DELETE FROM customers WHERE customer_id = %s RETURNING customer_id;", (customer_id,))
-    deleted_customer_id = cursor.fetchone()
-    connection.commit()
-    cursor.close()
-    release_db_connection(connection)
-    connection.close()
+    connection = None
+    cursor = None
 
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
 
-    if deleted_customer_id:
-        logger.info(f"Customer deleted: ID={customer_id}")
-        return jsonify({"message": "Customer deleted"}), 200
-    else:
-        logger.warning(f"Customer not found for deletion: ID={customer_id}")
-        return jsonify({"error": "Customer not found"}), 404
+        cursor.execute("DELETE FROM customers WHERE customer_id = %s RETURNING customer_id;", (customer_id,))
+        deleted_customer_id = cursor.fetchone()
+
+        if deleted_customer_id:
+            connection.commit()
+            logger.info(f"Customer deleted: ID={customer_id}")
+            return jsonify({"message": "Customer deleted"}), 200
+        else:
+            connection.rollback()  # rollback if nothing was deleted
+            logger.warning(f"Customer not found for deletion: ID={customer_id}")
+            return jsonify({"error": "Customer not found"}), 404
+
+    except Exception as e:
+        if connection:
+            connection.rollback()  # Rollback in case of any error
+        logger.error(f"Error deleting customer: {str(e)}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            release_db_connection(connection)  # return connection to pool
