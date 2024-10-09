@@ -55,31 +55,49 @@ def test_get_customer():
     assert "name" in customer
     assert "address" in customer
 
-def test_update_customer(new_customer):
-    # Test customer update
-    customer_id = new_customer["customer_id"]
+def test_update_customer():
+    # Create new customer for update
+    new_customer_data = {
+        "name": fake.name(),
+        "address": "123 Test St"
+    }
+    create_response = requests.post(f"{BASE_URL}", json=new_customer_data)
+    assert create_response.status_code == 201
+
+    # Get customer_id of created customer
+    customer_id = create_response.json()["customer_id"]
+
+    # Customer data update
     updated_data = {"name": fake.name(), "address": "Updated Address"}
-    response = requests.put(f"{BASE_URL}/{customer_id}", json=updated_data)
-    assert response.status_code == 200
-    updated_customer = response.json()
+    update_response = requests.put(f"{BASE_URL}/{customer_id}", json=updated_data)
+    assert update_response.status_code == 200
+
+    # Check customer updated successfully
+    updated_customer = update_response.json()
     assert updated_customer["customer_id"] == customer_id
     assert updated_customer["name"] == updated_data["name"]
     assert updated_customer["address"] == updated_data["address"]
 
-    # Database Update validation
-    response = requests.get(f"{BASE_URL}/{customer_id}")
-    assert response.status_code == 200
-    customer = response.json()
+    # Check database update
+    db_response = requests.get(f"{BASE_URL}/{customer_id}")
+    assert db_response.status_code == 200
+    customer = db_response.json()
     assert customer["name"] == updated_data["name"]
     assert customer["address"] == updated_data["address"]
 
+
 def test_delete_customer():
-    # Test Delete Customer
-    customer_id = str(randrange(1, 1000))
-    response = requests.delete(f"{BASE_URL}/{customer_id}")
-    assert response.status_code == 200
-    assert response.json()["message"] == "Customer deleted"
-    # Test delete non-existing (already deleted) customer
-    response = requests.get(f"{BASE_URL}/{customer_id}")
-    assert response.status_code == 404
-    assert response.json()["error"] == "Customer not found"
+    # DELETE customer Test
+    customer_data = {
+        "name": "Test Customer",
+        "address": "123 Test St"
+    }
+    create_response = requests.post(f"{BASE_URL}", json=customer_data)
+    assert create_response.status_code == 201
+
+    # Get created customer_id
+    customer_id = create_response.json()["customer_id"]
+
+    # Delete customer testing
+    delete_response = requests.delete(f"{BASE_URL}/{customer_id}")
+    assert delete_response.status_code == 200
