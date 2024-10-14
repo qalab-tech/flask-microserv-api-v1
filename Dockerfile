@@ -1,28 +1,27 @@
-# Используем официальный образ Python (легкий)
+# Используем базовый образ Python (можно slim, но с установкой нужных зависимостей)
 FROM python:3.11-slim
 
-# Устанавливаем рабочую директорию внутри контейнера
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Установка системных зависимостей для сборки (необходимые для psycopg2)
+# Устанавливаем необходимые системные зависимости для сборки psycopg2
 RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
     python3-dev \
-    build-essential \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 # Обновляем pip до последней версии
 RUN pip install --upgrade pip
 
-# Копируем requirements.txt и устанавливаем все зависимости
+# Копируем requirements.txt и устанавливаем все зависимости (без psycopg2-binary)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Устанавливаем psycopg2-binary
-RUN pip install psycopg2-binary
+# Устанавливаем psycopg2 отдельно
+RUN pip install psycopg2
 
-# Копируем все остальные файлы в контейнер
+# Копируем остальные файлы приложения
 COPY . .
 
 # Открываем порт 5000 для доступа к приложению
