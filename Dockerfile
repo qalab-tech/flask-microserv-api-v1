@@ -4,7 +4,7 @@ FROM python:3.11-slim
 # WORKDIR setup
 WORKDIR /app
 
-# Copy requirements.txt and install the dependences
+# Copy requirements.txt and install the dependencies
 COPY requirements.txt requirements.txt
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
@@ -16,7 +16,7 @@ COPY . .
 EXPOSE 5000
 
 # Running our Flask app with Gunicorn (Production Mode)
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "app:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
 
 
 
