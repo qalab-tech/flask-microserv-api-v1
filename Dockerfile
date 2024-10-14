@@ -4,6 +4,13 @@ FROM python:3.11-slim
 # Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
+# Устанавливаем зависимости для PostgreSQL
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    build-essential \
+    --no-install-recommends && rm -rf /var/lib/apt/lists/*
+
 # Скопируем requirements.txt и установим зависимости
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -15,5 +22,4 @@ COPY . .
 EXPOSE 5000
 
 # Запуск приложения через Gunicorn
-# Используем правило CPU * 2 + 1 для количества воркеров
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
