@@ -1,21 +1,19 @@
-
+# Используем официальный образ Python (легкий)
 FROM python:3.11-slim
 
-# WORKDIR setup
+# Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Copy requirements.txt and install the dependencies
-COPY requirements.txt requirements.txt
+# Скопируем requirements.txt и установим зависимости
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# COPY other files to Docker container
+# Копируем все остальные файлы в контейнер
 COPY . .
 
-# Expose port 5001 for our microservice application
+# Открываем порт 5000 для доступа к приложению
 EXPOSE 5000
 
-# Running our Flask app with Gunicorn (Production Mode)
+# Запуск приложения через Gunicorn
+# Используем правило CPU * 2 + 1 для количества воркеров
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
-
-
-
