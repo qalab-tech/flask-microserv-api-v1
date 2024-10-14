@@ -4,12 +4,15 @@ FROM python:3.11-slim
 # Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Устанавливаем зависимости для PostgreSQL
+# Устанавливаем зависимости для PostgreSQL и инструменты для сборки
 RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
     build-essential \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
+
+# Обновляем pip перед установкой зависимостей
+RUN pip install --upgrade pip
 
 # Скопируем requirements.txt и установим зависимости
 COPY requirements.txt .
