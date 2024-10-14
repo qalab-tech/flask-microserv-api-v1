@@ -4,7 +4,7 @@ FROM python:3.11-slim
 # Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Установка зависимостей для сборки (необходимые для psycopg2)
+# Установка системных зависимостей для сборки (необходимые для psycopg2)
 RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
@@ -12,14 +12,14 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
-# Обновляем pip
+# Обновляем pip до последней версии
 RUN pip install --upgrade pip
 
-# Копируем requirements.txt и устанавливаем все пакеты, кроме psycopg2-binary
+# Копируем requirements.txt и устанавливаем все зависимости
 COPY requirements.txt .
-RUN sed -i '/psycopg2-binary/d' requirements.txt && pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Устанавливаем psycopg2-binary отдельно
+# Устанавливаем psycopg2-binary
 RUN pip install psycopg2-binary
 
 # Копируем все остальные файлы в контейнер
