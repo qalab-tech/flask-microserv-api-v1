@@ -4,19 +4,23 @@ FROM python:3.11-slim
 # Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Устанавливаем зависимости для PostgreSQL и инструменты для сборки
+# Установка зависимостей для сборки (необходимые для psycopg2)
 RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
+    python3-dev \
     build-essential \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
-# Обновляем pip перед установкой зависимостей
+# Обновляем pip
 RUN pip install --upgrade pip
 
-# Скопируем requirements.txt и установим зависимости
+# Копируем requirements.txt и устанавливаем все пакеты, кроме psycopg2-binary
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN sed -i '/psycopg2-binary/d' requirements.txt && pip install --no-cache-dir -r requirements.txt
+
+# Устанавливаем psycopg2-binary отдельно
+RUN pip install psycopg2-binary
 
 # Копируем все остальные файлы в контейнер
 COPY . .
