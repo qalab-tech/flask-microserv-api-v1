@@ -8,3 +8,4 @@ pytest
 requests
 pytest-xdist
 pytest-html
+psycopg2-binary
