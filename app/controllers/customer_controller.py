@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from app.services.customer_service import get_customers, create_customer, update_customer, delete_customer
+from app.services.customer_service import get_customers, get_customer_by_id, create_customer, update_customer, delete_customer
 from app.logger_config import setup_logger
 
 logger = setup_logger("customer_controller")
@@ -19,7 +19,8 @@ def create_customer_route():
     return jsonify(response), status
 @customer_bp.route('/<int:customer_id>', methods=['GET'])
 def get_customer_route(customer_id):
-
+    response, status = get_customer_by_id(customer_id)
+    return jsonify(response), status
 
 @customer_bp.route('/<int:customer_id>', methods=['PUT'])
 def update_customer_route(customer_id):
