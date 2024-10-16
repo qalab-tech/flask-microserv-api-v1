@@ -12,12 +12,15 @@ def fetch_all_customers():
     release_db_connection(connection)
     return customers
 
+
 def fetch_customer(customer_id):
     connection = get_db_connection()
     cursor = connection.cursor()
-    customer = cursor.fetchone(f"SELECT * FROM customers WHERE custormer_id = {customer_id}")
+    cursor.execute("SELECT * FROM customers WHERE customer_id = %s;", (customer_id,))
+    customer = cursor.fetchone()
     cursor.close()
     return customer
+
 
 def insert_customer(name, address):
     connection = get_db_connection()
