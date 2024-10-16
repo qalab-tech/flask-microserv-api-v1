@@ -6,8 +6,7 @@ logger = setup_logger("customer_repository")
 
 def fetch_all_customers():
     connection = get_db_connection()
-    cursor = connection.cursor(
-        cursor_factory=psycopg2.extras.RealDictCursor)  # Используем RealDictCursor для возврата словарей
+    cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)  # Используем RealDictCursor для возврата словарей
     cursor.execute("SELECT * FROM customers")
     customers = cursor.fetchall()  # Получаем список словарей
     release_db_connection(connection)
@@ -16,7 +15,7 @@ def fetch_all_customers():
 
 def fetch_customer(customer_id):
     connection = get_db_connection()
-    cursor = connection.cursor()
+    cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     try:
         cursor.execute("SELECT * FROM customers WHERE customer_id = %s", (customer_id,))
         customer = cursor.fetchone()
