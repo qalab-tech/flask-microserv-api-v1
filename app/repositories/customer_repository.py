@@ -1,34 +1,49 @@
-# /app/repositories/customer_repository.py
-from app.db import get_db_connection
-from app.db import release_db_connection
+from app.db import get_db_connection, release_db_connection
 from app.logger_config import setup_logger
 
 logger = setup_logger("customer_repository")
 
-def get_all_customers():
+def fetch_all_customers():
     connection = get_db_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM customers")
     customers = cursor.fetchall()
+    cursor.close()
     release_db_connection(connection)
-    # connection.close()
-    logger.info(f"Retrieved {len(customers)} customers")
     return customers
 
-def update_customer_db(customer_id, data):
+def insert_customer(name, address):
     connection = get_db_connection()
     cursor = connection.cursor()
-    if data.get('name'):
-        cursor.execute("UPDATE customers SET name = %s WHERE customer_id = %s", (data['name'], customer_id))
-        logger.info(f"Customer's name updated successfully, new name is {data['name']}")
-    if data.get('address'):
-        cursor.execute("UPDATE customers SET address = %s WHERE customer_id = %s", (data['address'], customer_id))
-        logger.info(f"Customer's address updated successfully, new address is {data['address']}")
+    cursor.execute(
+        "INSERT INTO customers (name, address) VALUES (%s, %s) RETURNING customer_id;",
+        (name, address)
+    )
+    customer_id = cursor.fetchone()[0]
     connection.commit()
+    cursor.close()
     release_db_connection(connection)
-    connection.close()
+    return customer_id
 
+def update_customer_in_db(customer_id, name, address):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "UPDATE customers SET name = %s, address = %s WHERE customer_id = %s RETURNING customer_id;",
+        (name, address, customer_id)
+    )
+    updated_customer_id = cursor.fetchone()
+    connection.commit()
+    cursor.close()
+    release_db_connection(connection)
+    return updated_customer_id
 
-# def create_customer_db():
-#     return None
-"""TO-DO!"""
+def delete_customer_in_db(customer_id):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM customers WHERE customer_id = %s RETURNING customer_id;", (customer_id,))
+    deleted_customer_id = cursor.fetchone()
+    connection.commit()
+    cursor.close()
+    release_db_connection(connection)
+    return deleted_customer_id
