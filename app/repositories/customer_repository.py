@@ -1,14 +1,15 @@
 from app.db import get_db_connection, release_db_connection
 from app.logger_config import setup_logger
+import psycopg2.extras
 
 logger = setup_logger("customer_repository")
 
 def fetch_all_customers():
     connection = get_db_connection()
-    cursor = connection.cursor()
+    cursor = connection.cursor(
+        cursor_factory=psycopg2.extras.RealDictCursor)  # Используем RealDictCursor для возврата словарей
     cursor.execute("SELECT * FROM customers")
-    customers = cursor.fetchall()
-    cursor.close()
+    customers = cursor.fetchall()  # Получаем список словарей
     release_db_connection(connection)
     return customers
 
