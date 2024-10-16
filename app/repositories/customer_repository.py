@@ -16,10 +16,16 @@ def fetch_all_customers():
 def fetch_customer(customer_id):
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM customers WHERE customer_id = %s;", (customer_id,))
-    customer = cursor.fetchone()
-    cursor.close()
-    return customer
+    try:
+        cursor.execute("SELECT * FROM customers WHERE customer_id = %s", (customer_id,))
+        customer = cursor.fetchone()
+        return customer
+    except Exception as e:
+        logger.error(f"Database error: {e}")
+        return None  # Return None if something wrong
+    finally:
+        cursor.close()
+        connection.close()
 
 
 def insert_customer(name, address):

@@ -15,6 +15,8 @@ def get_customer_by_id(customer_id):
         logger.info(f"No such customer with id {customer['customer_id']}")
     return customer
 
+
+
 def create_customer(data):
     name = data.get('name')
     address = data.get('address')
