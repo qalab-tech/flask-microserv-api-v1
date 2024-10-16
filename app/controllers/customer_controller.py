@@ -21,14 +21,15 @@ def get_customer_route(customer_id):
     cursor = connection.cursor(cursor_factory=RealDictCursor)
     cursor.execute("SELECT * FROM customers WHERE customer_id = %s;", (customer_id,))
     customer = cursor.fetchone()
-    cursor.close()
-    connection.close()
     if customer:
         logger.info(f"Retrieved customer: {customer}")
         return jsonify(customer), 200
     else:
         logger.warning(f"Customer not found: ID={customer_id}")
         return jsonify({"error": "Customer not found"}), 404
+
+    cursor.close()
+    connection.close()
 
 @customer_bp.route('/', methods=['POST'])
 def create_new_customer():
@@ -87,9 +88,7 @@ def patch_customer_route(customer_id):
     cursor.execute(query, tuple(update_values))
     updated_customer_id = cursor.fetchone()
     connection.commit()
-    cursor.close()
-    release_db_connection(connection)
-    connection.close()
+
 
     if updated_customer_id:
         logger.info(f"Customer updated: ID={customer_id}, Name={name}, Address={address}")
@@ -97,7 +96,9 @@ def patch_customer_route(customer_id):
     else:
         logger.warning(f"Customer not found for update: ID={customer_id}")
         return jsonify({"error": "Customer not found"}), 404
-
+    cursor.close()
+    release_db_connection(connection)
+    connection.close()
 @customer_bp.route('/<int:customer_id>', methods=['PUT'])
 def update_customer_route(customer_id):
     """Update customer"""
@@ -116,9 +117,6 @@ def update_customer_route(customer_id):
     )
     updated_customer_id = cursor.fetchone()
     connection.commit()
-    cursor.close()
-    release_db_connection(connection)
-    connection.close()
 
     if updated_customer_id:
         logger.info(f"Customer updated: ID={customer_id}, Name={name}, Address={address}")
@@ -126,7 +124,9 @@ def update_customer_route(customer_id):
     else:
         logger.warning(f"Customer not found for update: ID={customer_id}")
         return jsonify({"error": "Customer not found"}), 404
-
+    cursor.close()
+    release_db_connection(connection)
+    connection.close()
 @customer_bp.route('/<int:customer_id>', methods=['DELETE'])
 def delete_customer_route(customer_id):
     """DELETE method"""
@@ -164,6 +164,7 @@ def delete_customer_route(customer_id):
         if connection:
             if success:
                 release_db_connection(connection)  # Возвращаем соединение в пул, только если операция прошла успешно
+
             else:
                 # Если операция не прошла успешно, не возвращаем соединение в пул, чтобы избежать использования закрытого соединения
                 logger.warning("Connection not returned to pool because of a failure.")
