@@ -19,8 +19,12 @@ def create_customer_route():
     return jsonify(response), status
 @customer_bp.route('/<int:customer_id>', methods=['GET'])
 def get_customer_route(customer_id):
-    response, status = get_customer_by_id(customer_id)
-    return jsonify(response), status
+    customer = get_customer_by_id(customer_id)
+    if customer:
+        return jsonify(customer), 200
+    else:
+        return jsonify({"error": "Customer not found"}), 404
+
 
 @customer_bp.route('/<int:customer_id>', methods=['PUT'])
 def update_customer_route(customer_id):
