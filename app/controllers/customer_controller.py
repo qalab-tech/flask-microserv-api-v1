@@ -117,6 +117,7 @@ def update_customer_route(customer_id):
     )
     updated_customer_id = cursor.fetchone()
     connection.commit()
+    release_db_connection(connection)
 
     if updated_customer_id:
         logger.info(f"Customer updated: ID={customer_id}, Name={name}, Address={address}")
@@ -124,9 +125,7 @@ def update_customer_route(customer_id):
     else:
         logger.warning(f"Customer not found for update: ID={customer_id}")
         return jsonify({"error": "Customer not found"}), 404
-    cursor.close()
-    release_db_connection(connection)
-    connection.close()
+
 @customer_bp.route('/<int:customer_id>', methods=['DELETE'])
 def delete_customer_route(customer_id):
     """DELETE method"""
