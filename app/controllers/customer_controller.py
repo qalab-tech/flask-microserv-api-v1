@@ -8,6 +8,11 @@ from app.logger_config import setup_logger
 logger = setup_logger("customer_controller")
 customer_bp = Blueprint('customers', __name__)
 
+@customer_bp.route('/version', methods=['GET'])
+def get_api_version_route():
+    """GET API Version"""
+    return jsonify({"api version": "1.1.1"})
+
 @customer_bp.route('/', methods=['GET'])
 def get_customers_route():
     """GET all customers"""
