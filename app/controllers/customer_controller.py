@@ -17,6 +17,9 @@ def create_customer_route():
     data = request.json
     response, status = create_customer(data)
     return jsonify(response), status
+@customer_bp.route('/<int:customer_id>', methods=['GET'])
+def get_customer_route(customer_id):
+
 
 @customer_bp.route('/<int:customer_id>', methods=['PUT'])
 def update_customer_route(customer_id):
