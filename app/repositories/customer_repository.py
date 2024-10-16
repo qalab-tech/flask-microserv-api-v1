@@ -19,10 +19,15 @@ def fetch_customer(customer_id):
     try:
         cursor.execute("SELECT * FROM customers WHERE customer_id = %s", (customer_id,))
         customer = cursor.fetchone()
+
+        if not customer:
+            logger.info(f"No customer found with id {customer_id}")
+            return None
+
         return customer
     except Exception as e:
         logger.error(f"Database error: {e}")
-        return None  # Return None if something wrong
+        return None
     finally:
         cursor.close()
         connection.close()
