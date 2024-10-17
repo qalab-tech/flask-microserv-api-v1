@@ -7,9 +7,10 @@ logger = setup_logger("customer_service")
 
 def get_customers():
     customers = fetch_all_customers()
+    customers_len = len(customers)
     if not customers:
         logger.info("No customers found")
-    logger.info("{len(customers)} customers found")
+    logger.info(f"{customers_len} customers found")
     return customers
 
 
