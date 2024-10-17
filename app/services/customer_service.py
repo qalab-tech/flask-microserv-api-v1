@@ -1,13 +1,17 @@
-from app.repositories.customer_repository import fetch_all_customers, fetch_customer, insert_customer, update_customer_in_db, delete_customer_in_db
+from app.repositories.customer_repository import fetch_all_customers, fetch_customer, insert_customer, \
+    update_customer_in_db, delete_customer_in_db
 from app.logger_config import setup_logger
 
 logger = setup_logger("customer_service")
+
 
 def get_customers():
     customers = fetch_all_customers()
     if not customers:
         logger.info("No customers found")
+    logger.info("{len(customers)} customers found")
     return customers
+
 
 def get_customer_by_id(customer_id):
     customer = fetch_customer(customer_id)
@@ -18,7 +22,6 @@ def get_customer_by_id(customer_id):
     return customer
 
 
-
 def create_customer(data):
     name = data.get('name')
     address = data.get('address')
@@ -26,6 +29,7 @@ def create_customer(data):
         return {"error": "Name and address are required"}, 400
     customer_id = insert_customer(name, address)
     return {"customer_id": customer_id, "name": name, "address": address}, 201
+
 
 def update_customer(customer_id, data):
     name = data.get('name')
@@ -37,6 +41,7 @@ def update_customer(customer_id, data):
         return {"customer_id": customer_id, "name": name, "address": address}, 200
     else:
         return {"error": "Customer not found"}, 404
+
 
 def delete_customer(customer_id):
     deleted_customer_id = delete_customer_in_db(customer_id)
