@@ -1,0 +1,24 @@
+version: '3'
+services:
+  web:
+    image: customer-api-v1  # Using Flask Application Image
+    ports:
+      - "5000:5000"  # Port forwarding for Flask API
+    environment:
+      - DATABASE_URL=postgresql://postgres:Gl00m88@192.168.88.18:5432/postgres  # Postgres Connection Url
+    depends_on:
+      - db  # The container with Postgres starts earlier
+
+  db:
+    image: postgres  # Use the official Postgres Image
+    environment:
+      POSTGRES_USER: postgres # DB User
+      POSTGRES_PASSWORD: Gl00m88  # DB Password
+      POSTGRES_DB: postgres  # Our Postgres Database
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Create volume for DB Storage
+    ports:
+      - "5432:5432"  # Forward ports if you need to connect from the outside
+
+volumes:
+  postgres_data:  # Defining a volume for storing Postgres data
