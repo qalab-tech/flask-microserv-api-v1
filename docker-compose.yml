@@ -7,6 +7,8 @@ services:
       - DATABASE_URL=postgresql://postgres:Gl00m88@192.168.88.18:5432/postgres  # Postgres Connection Url
     depends_on:
       - db  # The container with Postgres starts earlier
+    restart:
+      always
 
   db:
     image: postgres  # Use the official Postgres Image
@@ -18,6 +20,8 @@ services:
       - postgres_data:/var/lib/postgresql/data  # Create volume for DB Storage
     ports:
       - "5432:5432"  # Forward ports if you need to connect from the outside
+    restart:
+      always
 
 volumes:
   postgres_data:  # Defining a volume for storing Postgres data
