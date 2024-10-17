@@ -26,8 +26,10 @@ def create_customer(data):
     name = data.get('name')
     address = data.get('address')
     if not name or not address:
+        logger.error("Name and address are required")
         return {"error": "Name and address are required"}, 400
     customer_id = insert_customer(name, address)
+    logger.info(f"Customer with id={customer_id}, name={name} and address={address} is added")
     return {"customer_id": customer_id, "name": name, "address": address}, 201
 
 

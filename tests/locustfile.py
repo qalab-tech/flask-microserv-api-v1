@@ -6,7 +6,7 @@ class CustomerAPITestUser(HttpUser):
     @task
     def get_customers(self):
         # Send request to /customers
-        response = self.client.get("/customers")
+        response = self.client.get("/api/v1/customers")
         if response.status_code == 200:
             print(f"Successfully retrieved customers: {len(response.json())} entries")
         else:

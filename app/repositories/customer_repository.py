@@ -25,7 +25,7 @@ def fetch_customer(customer_id):
 
         if not customer:
             logger.info(f"No customer found with id {customer_id}")
-        logger.info(f"Customer with id={customer_id} found successfully")
+        logger.info(f"Customer with id={customer_id} found in database")
         return customer
     except Exception as e:
         logger.error(f"Database error: {e}")
