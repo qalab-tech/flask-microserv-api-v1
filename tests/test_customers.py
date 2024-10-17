@@ -7,7 +7,6 @@ from random import randrange
 
 fake = Faker()
 
-
 # Reading configuration from config.yaml
 with open("tests/pytests_config.yaml", 'r') as file:
     config = yaml.safe_load(file)
@@ -15,67 +14,73 @@ with open("tests/pytests_config.yaml", 'r') as file:
 # Flask microservice Base URL
 BASE_URL = config["Base Application URL"]
 
-# Фикстура для создания новых данных для клиента
+
+# Fixture for customer data creation
 @pytest.fixture
 def new_customer_data():
     return {"name": fake.name(), "address": fake.address()}
 
-# Фикстура для создания нового клиента в базе
+
+# Fixture to create a new customer in database
 @pytest.fixture
 def new_customer(new_customer_data):
     response = requests.post(BASE_URL, json=new_customer_data)
     assert response.status_code == 201
     customer = response.json()
-    yield customer  # Возвращаем данные клиента для использования в тестах
-    # После завершения теста удаляем клиента
+    yield customer  # get customer data for using in tests
+    # Delete customer after all tests
     requests.delete(f"{BASE_URL}/{customer['customer_id']}")
 
-# Тест получения всех клиентов
+
 def test_get_all_customers():
+    """GET all customers test"""
     response = requests.get(BASE_URL)
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
+
 # Тест создания нового клиента
 def test_create_customer(new_customer_data):
+    """Create new customer test"""
     response = requests.post(BASE_URL, json=new_customer_data)
     assert response.status_code == 201
     customer = response.json()
     assert "customer_id" in customer
     assert customer["name"] == new_customer_data["name"]
     assert customer["address"] == new_customer_data["address"]
-    # Удаляем созданного клиента
+    # Remove created customer
     requests.delete(f"{BASE_URL}/{customer['customer_id']}")
 
-# Тест получения клиента по ID
+
 def test_get_customer(new_customer):
+    """Test get customer by id"""
     customer_id = new_customer["customer_id"]
     response = requests.get(f"{BASE_URL}/{customer_id}")
     customer = response.json()
     assert response.status_code == 200
-    assert isinstance(customer, list)
+    assert isinstance(customer, dict)
 
 
-# Тест обновления данных клиента
 def test_update_customer(new_customer, new_customer_data):
+    """Test UPDATE customer"""
     customer_id = new_customer["customer_id"]
 
-    # Получаем новые данные для обновления
+    # New customer data for update
     updated_data = {
         "name": new_customer_data["name"],
         "address": new_customer_data["address"]
     }
 
-    # Отправляем запрос на обновление данных клиента
+    # Send UPDATE request
     response = requests.put(f"{BASE_URL}/{customer_id}", json=updated_data)
     assert response.status_code == 200
 
-    # Проверяем, что данные клиента успешно обновлены
+    # Check of correct data UPDATE
     updated_customer = response.json()
     assert updated_customer["name"] == updated_data["name"]
     assert updated_customer["address"] == updated_data["address"]
 
-    # Дополнительно проверяем, что данные изменились в базе
+    # Additional UPDATE check
     response = requests.get(f"{BASE_URL}/{customer_id}")
     assert response.status_code == 200
     customer = response.json()
@@ -83,14 +88,14 @@ def test_update_customer(new_customer, new_customer_data):
     assert customer["address"] == updated_data["address"]
 
 
-# Тест удаления клиента
 def test_delete_customer(new_customer):
+    """Test DELETE customer"""
     customer_id = new_customer["customer_id"]
 
-    # Удаляем клиента
+    # Delete customer
     response = requests.delete(f"{BASE_URL}/{customer_id}")
     assert response.status_code == 200
 
-    # Проверяем, что клиент больше не существует
+    # Check the customer doesn't exist
     response = requests.get(f"{BASE_URL}/{customer_id}")
     assert response.status_code == 404
