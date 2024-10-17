@@ -40,8 +40,10 @@ def update_customer(customer_id, data):
         return {"error": "Name and address are required"}, 400
     updated_customer_id = update_customer_in_db(customer_id, name, address)
     if updated_customer_id:
+        logger.info(f"Customer with id={customer_id}, name={name} and address={address} updated successfully")
         return {"customer_id": customer_id, "name": name, "address": address}, 200
     else:
+        logger.error(f"Customer with id={customer_id} not found")
         return {"error": "Customer not found"}, 404
 
 
