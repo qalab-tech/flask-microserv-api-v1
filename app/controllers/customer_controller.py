@@ -24,11 +24,13 @@ def create_customer_route():
 
 @customer_bp.route('/<int:customer_id>', methods=['GET'])
 def get_customer_route(customer_id):
-    """GET customer by Id"""
+    """GET customer by id"""
     customer = get_customer_by_id(customer_id)
     if customer:
+        logger.info(f"Customer with id={customer_id} found, customer data: {str(customer)}")
         return jsonify(customer), 200
     else:
+        logger.error(f"Customer with id={customer_id} not found in database")
         return jsonify({"error": "Customer not found"}), 404
 
 

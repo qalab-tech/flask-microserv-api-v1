@@ -18,7 +18,6 @@ def get_customer_by_id(customer_id):
     customer = fetch_customer(customer_id)
     if customer is None:
         logger.info(f"No such customer with id {customer_id}")
-        return None
 
     return customer
 
