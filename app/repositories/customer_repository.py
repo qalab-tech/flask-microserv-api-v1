@@ -4,11 +4,14 @@ import psycopg2.extras
 
 logger = setup_logger("customer_repository")
 
+
 def fetch_all_customers():
     connection = get_db_connection()
-    cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)  # Используем RealDictCursor для возврата словарей
+    cursor = connection.cursor(
+        cursor_factory=psycopg2.extras.RealDictCursor)  # Use RealDictCursor to get dictionaries
     cursor.execute("SELECT * FROM customers")
-    customers = cursor.fetchall()  # Получаем список словарей
+    customers = cursor.fetchall()  # Get list of dictionaries
+    cursor.close()
     release_db_connection(connection)
     return customers
 
@@ -22,15 +25,13 @@ def fetch_customer(customer_id):
 
         if not customer:
             logger.info(f"No customer found with id {customer_id}")
-            return None
-
+        logger.info(f"Customer with id={customer_id} found successfully")
         return customer
     except Exception as e:
         logger.error(f"Database error: {e}")
-        return None
     finally:
         cursor.close()
-        connection.close()
+        release_db_connection(connection)
 
 
 def insert_customer(name, address):
@@ -46,6 +47,7 @@ def insert_customer(name, address):
     release_db_connection(connection)
     return customer_id
 
+
 def update_customer_in_db(customer_id, name, address):
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -58,6 +60,7 @@ def update_customer_in_db(customer_id, name, address):
     cursor.close()
     release_db_connection(connection)
     return updated_customer_id
+
 
 def delete_customer_in_db(customer_id):
     connection = get_db_connection()

@@ -9,7 +9,7 @@ DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:Gl00m88@192.168.
 
 # Init Pool
 try:
-    connection_pool = psycopg2.pool.SimpleConnectionPool(1, 50, DATABASE_URL)  # Увеличил maxconn до 50
+    connection_pool = psycopg2.pool.SimpleConnectionPool(1, 20, DATABASE_URL)
     if connection_pool:
         logger.info("Connection pool created successfully")
 except Exception as e:
