@@ -16,7 +16,7 @@ jobs:
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Updated: Твой приватный ключ для подключения к Raspberry Pi
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Updated in Actions: Твой приватный ключ для подключения к Raspberry Pi
 
       - name: Deploy to Raspberry Pi
         run: |
