@@ -18,11 +18,10 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to Raspberry Pi
+      - name: Deploy to Raspberry Pi 3B
         run: |
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
             cd /home/dgornostaev/flask-rest-api-v1
             git pull origin main
-            docker compose down
             docker compose up -d --build
           EOF
