@@ -1,26 +1,16 @@
-name: Deploy Flask Application on Raspberry PI 3B
-
-on:
-  push:
-    branches:
-      - main
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3  # Обновлено
+        uses: actions/checkout@v3
 
-      - name: Setup SSH
-        uses: appleboy/ssh-action@v0.1.3
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.5.3
         with:
-          host: 178.218.58.175  # Укажи свой хост здесь
-          username: dgornostaev  # Укажи пользователя здесь
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 8022  # Порт указываем только здесь
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Deploy to server
         run: |
-          ssh dgornostaev@178.218.58.175 "cd /home/dgornostaev/flask-rest-api-v1 && docker-compose pull && docker-compose up -d"
+          ssh -p 8022 dgornostaev@178.218.58.175 "cd /path/to/app && docker-compose pull && docker-compose up -d"
