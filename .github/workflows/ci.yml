@@ -1,0 +1,28 @@
+name: Deploy to Raspberry Pi
+
+on:
+  push:
+    branches:
+      - main  # Запускается при коммитах в ветку main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Твой приватный ключ для подключения к Raspberry Pi
+
+      - name: Deploy to Raspberry Pi
+        run: |
+          ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
+            cd /home/dgornostaev/flask-rest-api-v1
+            git pull origin main
+            docker compose down
+            docker compose up -d --build  
+          EOF
