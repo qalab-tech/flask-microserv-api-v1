@@ -25,19 +25,12 @@ jobs:
             git pull origin main
             docker compose up -d --build
             echo "Running tests on production database..."
-            docker exec flask-rest-api-v1-web-1 pytest --alluredir=allure-results --html=report.html --self-contained-html
+            docker exec flask-rest-api-v1-web-1 pytest --html=report.html --self-contained-html
           EOF
 
       - name: Copy test reports from Raspberry Pi
         run: |
-          scp -P 8022 dgornostaev@178.218.58.175:/home/dgornostaev/flask-rest-api-v1/allure-results/* allure-results/
-          scp -P 8022 dgornostaev@178.218.58.175:/home/dgornostaev/flask-rest-api-v1/report.html report.html
-
-      - name: Upload Allure Results as Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: allure-results
-          path: allure-results
+         scp -P 8022 dgornostaev@178.218.58.175:/home/dgornostaev/flask-rest-api-v1/report.html report.html
 
       - name: Upload HTML Report as Artifact
         uses: actions/upload-artifact@v3
