@@ -45,7 +45,7 @@ jobs:
 
             # Попробуем вручную запустить pytest в режиме отладки
 #            echo "Running pytest tests with debug..."
-#            docker compose exec web /usr/local/bin/pytest tests/ --maxfail=5 --disable-warnings --verbose
+            docker exec flask-rest-api-v1-web-1 /usr/local/bin/pytest tests/ --maxfail=5 --disable-warnings --verbose
 #
 #            # Очищаем все контейнеры и данные после тестирования
 #            docker compose down --volumes --remove-orphans
