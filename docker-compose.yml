@@ -1,15 +1,15 @@
 services:
   web:
-    image: customer-api-v1  # Using Flask Application Image
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "5000:5000"  # Port forwarding for Flask API
-    environment:
-      - DATABASE_URL  # Postgres Connection Url
-      - BASE_URL # from .env file
+      - "5000:5000"
     depends_on:
-      - db  # The container with Postgres starts earlier
+      - db
     restart:
       always
+
 
   db:
     image: postgres  # Use the official Postgres Image
