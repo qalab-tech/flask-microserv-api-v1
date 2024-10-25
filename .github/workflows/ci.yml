@@ -24,16 +24,17 @@ jobs:
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
             cd /home/dgornostaev/flask-rest-api-v1
 
-            # Явное указание merge стратегии при pull
+            git reset --hard
+
             git pull origin main --no-rebase
 
             docker compose up -d test_db web
 
-            sleep 10  # Allow time for DB initialization
-
+            sleep 10
+          
             docker compose exec test_db psql -U test_user -d test_db -c "CREATE TABLE IF NOT EXISTS customers (customer_id SERIAL PRIMARY KEY, name VARCHAR(100), address VARCHAR(255));"
 
-            docker compose exec web pytest tests/ --maxfail=5 --disable-warnings
+            docker compose exec web /usr/local/bin/pytest tests/ --maxfail=5 --disable-warnings
 
             docker compose down --volumes --remove-orphans
 
