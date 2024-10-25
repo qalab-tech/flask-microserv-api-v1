@@ -24,25 +24,18 @@ jobs:
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
             cd /home/dgornostaev/flask-rest-api-v1
 
-            # Pull the latest code from the main branch
-            git pull origin main
+            # Явное указание merge стратегии при pull
+            git pull origin main --no-rebase
 
-            # Set up and run test containers
-            docker compose up -d test_db
+            docker compose up -d test_db web
 
-            # Wait for the test database to start
             sleep 10  # Allow time for DB initialization
 
-            # Run SQL to create the 'customers' table
-            psql -h localhost -p 5433 -U test_user -d test_db -c "CREATE TABLE IF NOT EXISTS customers (customer_id SERIAL PRIMARY KEY, name VARCHAR(100), address VARCHAR(255));"
+            docker compose exec test_db psql -U test_user -d test_db -c "CREATE TABLE IF NOT EXISTS customers (customer_id SERIAL PRIMARY KEY, name VARCHAR(100), address VARCHAR(255));"
 
-            # Run tests from the 'tests' directory
-            export DATABASE_URL=postgresql://test_user:test_password@localhost:5433/test_db  # Use test DB
-            pytest -n 4 tests/ --maxfail=5 --disable-warnings  # Run your tests
+            docker compose exec web pytest tests/ --maxfail=5 --disable-warnings
 
-            # Shut down and remove the test database container
             docker compose down --volumes --remove-orphans
 
-            # Deploy the application with the production database
             docker compose up -d --build
           EOF
