@@ -1,4 +1,3 @@
-version: '3'
 services:
   web:
     image: customer-api-v1  # Using Flask Application Image
