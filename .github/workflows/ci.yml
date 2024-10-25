@@ -24,16 +24,24 @@ jobs:
             cd /home/dgornostaev/flask-rest-api-v1
             git pull origin main
             docker compose up -d --build
-            echo "Running tests on production database..."
-            docker exec flask-rest-api-v1-web-1 pytest --html=report.html --self-contained-html
-          EOF
+            # Запуск тестов в контейнере
+      - name: Run tests inside Docker container
+        run: |
+          docker exec flask-rest-api-v1-web-1 pytest --html=report.html --self-contained-html
 
+      # Копируем файл отчета из контейнера на хост Raspberry Pi
+      - name: Copy test report from Docker container to Raspberry Pi host
+        run: |
+          docker cp flask-rest-api-v1-web-1:/app/report.html /home/dgornostaev/flask-rest-api-v1/
+
+      # Копируем файл отчета с Raspberry Pi на GitHub Actions runner
       - name: Copy test reports from Raspberry Pi
         run: |
-         scp -P 8022 dgornostaev@178.218.58.175:/home/dgornostaev/flask-rest-api-v1/report.html report.html
+          scp -P 8022 dgornostaev@178.218.58.175:/home/dgornostaev/flask-rest-api-v1/report.html report.html
 
+      # Загрузка отчета как артефакта
       - name: Upload HTML Report as Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: html-report
+          name: report-html
           path: report.html
