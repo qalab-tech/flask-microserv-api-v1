@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
-# Обновляем pip до последней версии
+# Upgrade pip
 RUN pip install --upgrade pip
 
 # Копируем requirements.txt и устанавливаем все зависимости
