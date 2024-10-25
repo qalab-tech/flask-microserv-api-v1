@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
 
 # Обновляем pip до последней версии
 RUN pip install --upgrade pip
-
+COPY .env .
 # Копируем requirements.txt и устанавливаем все зависимости
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
