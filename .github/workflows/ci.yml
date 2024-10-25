@@ -11,17 +11,38 @@ jobs:
 
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to Raspberry Pi 3B
+      # Step to build and run the application with the test database
+      - name: Deploy and test on Raspberry Pi 3B
         run: |
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
             cd /home/dgornostaev/flask-rest-api-v1
+
+            # Pull the latest code from the main branch
             git pull origin main
-            docker compose up -d --build
+
+            # Set up and run test containers
+            docker-compose up -d test_db
+
+            # Wait for the test database to start
+            sleep 10  # Allow time for DB initialization
+
+            # Run SQL to create the 'customers' table
+            psql -h localhost -p 5433 -U test_user -d test_db -c "CREATE TABLE IF NOT EXISTS customers (customer_id SERIAL PRIMARY KEY, name VARCHAR(100), address VARCHAR(255));"
+
+            # Run tests from the 'tests' directory
+            export DATABASE_URL=postgresql://test_user:test_password@localhost:5433/test_db  # Use test DB
+            pytest tests/ --maxfail=5 --disable-warnings  # Run your tests
+
+            # Shut down and remove the test database container
+            docker-compose down --volumes --remove-orphans
+
+            # Deploy the application with the production database
+            docker-compose up -d --build
           EOF
