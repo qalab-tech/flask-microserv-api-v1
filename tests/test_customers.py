@@ -1,18 +1,12 @@
-from venv import create
 import requests
 import pytest
-import yaml
 from faker.proxy import Faker
-from random import randrange
+import os
 
 fake = Faker()
 
-# Reading configuration from config.yaml
-with open("tests/pytests_config.yaml", 'r') as file:
-    config = yaml.safe_load(file)
-
 # Flask microservice Base URL
-BASE_URL = config["Base Application URL"]
+BASE_URL = os.getenv("DATABASE_URL")
 
 
 # Fixture for customer data creation
@@ -32,14 +26,7 @@ def new_customer(new_customer_data):
     requests.delete(f"{BASE_URL}/{customer['customer_id']}")
 
 
-def test_get_all_customers():
-    """GET all customers test"""
-    response = requests.get(BASE_URL)
-    assert response.status_code == 200
-    assert isinstance(response.json(), list)
-
-
-# Тест создания нового клиента
+# New customer creation test
 def test_create_customer(new_customer_data):
     """Create new customer test"""
     response = requests.post(BASE_URL, json=new_customer_data)
@@ -50,6 +37,13 @@ def test_create_customer(new_customer_data):
     assert customer["address"] == new_customer_data["address"]
     # Remove created customer
     requests.delete(f"{BASE_URL}/{customer['customer_id']}")
+
+
+def test_get_all_customers():
+    """GET all customers test"""
+    response = requests.get(BASE_URL)
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
 
 
 def test_get_customer(new_customer):
@@ -91,11 +85,9 @@ def test_update_customer(new_customer, new_customer_data):
 def test_delete_customer(new_customer):
     """Test DELETE customer"""
     customer_id = new_customer["customer_id"]
-
     # Delete customer
     response = requests.delete(f"{BASE_URL}/{customer_id}")
     assert response.status_code == 200
-
     # Check the customer doesn't exist
     response = requests.get(f"{BASE_URL}/{customer_id}")
     assert response.status_code == 404

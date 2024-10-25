@@ -5,7 +5,16 @@ from app.logger_config import setup_logger
 
 logger = setup_logger("db_connection")
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:Gl00m88@192.168.88.18/postgres")
+# ENVIRONMENT = os.getenv("ENVIRONMENT", "production")
+#
+# # Postgres database connection
+#
+# if ENVIRONMENT == "test":
+#     # Use test database
+#     DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:test_password@localhost:5433/test_db")
+# else:
+# Use production Database
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Init Pool
 try:
@@ -15,6 +24,7 @@ try:
 except Exception as e:
     logger.error(f"Error creating connection pool: {str(e)}")
     raise
+
 
 def get_db_connection():
     """Get connection from pool"""
@@ -27,6 +37,7 @@ def get_db_connection():
         logger.error(f"Error getting connection from pool: {str(e)}")
         raise
 
+
 def release_db_connection(connection):
     """Return connection to pool"""
     try:
@@ -36,6 +47,7 @@ def release_db_connection(connection):
     except Exception as e:
         logger.error(f"Error releasing connection: {str(e)}")
 
+
 def close_all_connections():
     """Close all connections from pool"""
     try:
@@ -44,4 +56,3 @@ def close_all_connections():
             logger.info("All connections in the pool closed")
     except Exception as e:
         logger.error(f"Error closing all connections: {str(e)}")
-
