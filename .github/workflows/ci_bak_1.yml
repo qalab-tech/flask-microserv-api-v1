@@ -1,0 +1,55 @@
+name: Deploy to Raspberry Pi 3B
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Step to build and run the application with the test database
+      - name: Deploy and test on Raspberry Pi 3B
+        run: |
+          ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
+            cd /home/dgornostaev/flask-rest-api-v1
+
+            git reset --hard
+            git pull origin main --no-rebase
+
+#   Поднимаем контейнеры с тестовой базой данных и приложением
+#            docker compose up -d test_db web
+
+            # Проверяем, что контейнеры работают
+#            docker compose ps
+
+            # Ожидание поднятия базы данных
+#            echo "Waiting for the database to initialize..."
+#            sleep 15
+
+            # Проверим, что база данных действительно доступна
+#            docker compose exec test_db psql -U test_user -d test_db -c "SELECT 1;"
+
+            # Создание таблицы в базе данных
+#            docker compose exec test_db psql -U test_user -d test_db -c "CREATE TABLE IF NOT EXISTS customers (customer_id SERIAL PRIMARY KEY, name VARCHAR(100), address VARCHAR(255));"
+
+            # Проверим, где находится pytest
+#            echo "Checking pytest path in the web container..."
+#            docker compose exec web which pytest
+
+            # Попробуем вручную запустить pytest в режиме отладки
+#            echo "Running pytest tests with debug..."
+            docker exec flask-rest-api-v1-web-1 /usr/local/bin/pytest tests/ --maxfail=5 --disable-warnings --verbose
+#
+#            # Очищаем все контейнеры и данные после тестирования
+#            docker compose down --volumes --remove-orphans
+#
+#            # Перезапускаем приложение в рабочем режиме
+            docker compose up -d --build
+          EOF
