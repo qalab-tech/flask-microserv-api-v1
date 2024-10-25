@@ -24,19 +24,19 @@ services:
     restart:
       always
 
-  test_db:
-    image: postgres  # Separate service for the test DB
-    environment:
-      POSTGRES_USER: test_user
-      POSTGRES_PASSWORD: test_password
-      POSTGRES_DB: test_db
-    volumes:
-      - test_postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5433:5432"  # Running on a different port
-    restart:
-      always
+#  test_db:
+#    image: postgres  # Separate service for the test DB
+#    environment:
+#      POSTGRES_USER: test_user
+#      POSTGRES_PASSWORD: test_password
+#      POSTGRES_DB: test_db
+#    volumes:
+#      - test_postgres_data:/var/lib/postgresql/data
+#    ports:
+#      - "5433:5432"  # Running on a different port
+#    restart:
+#      always
 
 volumes:
   postgres_data:
-  test_postgres_data:  # Volume for storing the test DB data
+#  test_postgres_data:  # Volume for storing the test DB data
