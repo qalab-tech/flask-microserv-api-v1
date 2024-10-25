@@ -4,7 +4,8 @@ services:
     ports:
       - "5000:5000"  # Port forwarding for Flask API
     environment:
-      - DATABASE_URL=postgresql://postgres:Gl00m88@192.168.88.18:5432/postgres  # Postgres Connection Url
+      - DATABASE_URL  # Postgres Connection Url
+      - BASE_URL # from .env file
     depends_on:
       - db  # The container with Postgres starts earlier
     restart:
