@@ -1,4 +1,4 @@
-name: Deploy to Raspberry Pi 3B
+name: Deploy to Raspberry Pi 3B and Run Tests with Reports
 
 on:
   push:
@@ -22,21 +22,25 @@ jobs:
         run: |
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
             cd /home/dgornostaev/flask-rest-api-v1
-
-            # Pull the latest changes
-            git pull origin main --no-rebase
-
-            # Build and start the production containers
+            git pull origin main
             docker compose up -d --build
-
-            # Wait for services to initialize
-            echo "Waiting for services to start..."
-            sleep 20
-
-            # Now let's run pytest in the web container on the production database
             echo "Running tests on production database..."
-            docker compose exec web /usr/local/bin/pytest --maxfail=5 --disable-warnings --verbose || echo "Tests failed"
-
-            # Optionally check the logs for debugging
-            docker compose logs web
+            docker exec flask-rest-api-v1-web-1 pytest --alluredir=allure-results --html=report.html --self-contained-html
           EOF
+
+      - name: Copy test reports from Raspberry Pi
+        run: |
+          scp -P 8022 dgornostaev@178.218.58.175:/home/dgornostaev/flask-rest-api-v1/allure-results/* allure-results/
+          scp -P 8022 dgornostaev@178.218.58.175:/home/dgornostaev/flask-rest-api-v1/report.html report.html
+
+      - name: Upload Allure Results as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-results
+          path: allure-results
+
+      - name: Upload HTML Report as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: html-report
+          path: report.html
