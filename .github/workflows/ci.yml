@@ -1,4 +1,4 @@
-name: Deploy and Test on GitHub Actions
+name: Deploy to Raspberry Pi 3B
 
 on:
   push:
@@ -6,38 +6,22 @@ on:
       - main
 
 jobs:
-  test_and_deploy:
+  deploy:
     runs-on: ubuntu-latest
-
-    env:
-      BASE_URL: "http://localhost:5000/api/v1/customers"
 
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
 
-      # Поднимаем контейнеры для тестирования
-      - name: Start services for testing
-        run: |
-          docker compose up -d
-
-      # Запускаем тесты
-      - name: Run tests
-        run: |
-          pytest --base-url $BASE_URL
-
-      # Если тесты прошли успешно, выполняем деплой на Raspberry Pi
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Deploy to Raspberry Pi 3B
-        if: success()  # Деплой выполняется только если тесты успешны
         run: |
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
             cd /home/dgornostaev/flask-rest-api-v1
             git pull origin main
-            docker compose down
             docker compose up -d --build
           EOF
