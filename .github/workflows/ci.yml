@@ -42,10 +42,10 @@ jobs:
         env:
           PGPASSWORD: test_password
         run: |
-          echo "Waiting for PostgreSQL to be ready..."
+          echo "Waiting for PostgreSQL to be fully ready..."
           for i in {1..10}; do
-            if psql -h postgres -U test_user -d test_db -c '\q' 2>/dev/null; then
-              echo "PostgreSQL is ready!"
+            if [ "$(docker inspect --format='{{.State.Health.Status}}' $(docker-compose ps -q postgres))" = "healthy" ]; then
+              echo "PostgreSQL is healthy!"
               break
             else
               echo "PostgreSQL is not ready yet. Waiting..."
