@@ -1,0 +1,59 @@
+name: Deploy to Raspberry Pi 3B and Run Tests with Reports
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy to Raspberry Pi 3B
+        run: |
+          ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
+            cd /home/dgornostaev/flask-rest-api-v1
+            git pull origin main
+            # Шаг развертывания контейнеров
+      - name: Start Docker containers
+        run: |
+          docker compose up -d
+
+      # Проверяем состояние контейнеров и ждем, пока они будут готовы
+      - name: Wait for containers to be ready
+        run: |
+          while [ $(docker inspect -f '{{.State.Running}}' flask-microserv-api-v1-web-1) != "true" ]; do
+            echo "Waiting for the container to be ready...";
+            sleep 5;
+          done
+
+      # Запускаем тесты внутри контейнера
+      - name: Run tests inside Docker container
+        run: |
+          docker exec flask-microserv-api-v1-web-1 pytest --html=report.html --self-contained-html
+
+      # Копируем файл отчета из контейнера на хост Raspberry Pi
+      - name: Copy test report from Docker container to Raspberry Pi host
+        run: |
+          docker cp flask-microserv-api-v1-web-1:/app/report.html /home/dgornostaev/flask-rest-api-v1/
+
+      # Копируем файл отчета с Raspberry Pi на GitHub Actions runner
+      - name: Copy test reports from Raspberry Pi
+        run: |
+          scp -P 8022 dgornostaev@178.218.58.175:/home/dgornostaev/flask-rest-api-v1/report.html report.html
+
+      # Загрузка отчета как артефакта
+      - name: Upload HTML Report as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: report-html
+          path: report.html

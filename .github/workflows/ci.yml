@@ -1,4 +1,4 @@
-name: Deploy to Raspberry Pi 3B and Run Tests with Reports
+name: Test and Deploy on Raspberry PI 3B
 
 on:
   push:
@@ -6,11 +6,56 @@ on:
       - main
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U test_user"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests and generate report
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+        run: |
+          pytest tests --html=report.html  # Запуск тестов с генерацией отчета
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: report.html
+
   deploy:
+    needs: test  # Джоба deploy будет выполняться после успешного завершения test
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the code
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up SSH
@@ -18,42 +63,10 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to Raspberry Pi 3B
+      - name: Deploy to Raspberry Pi
         run: |
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
-            cd /home/dgornostaev/flask-rest-api-v1
-            git pull origin main
-            # Шаг развертывания контейнеров
-      - name: Start Docker containers
-        run: |
-          docker compose up -d
-
-      # Проверяем состояние контейнеров и ждем, пока они будут готовы
-      - name: Wait for containers to be ready
-        run: |
-          while [ $(docker inspect -f '{{.State.Running}}' flask-microserv-api-v1-web-1) != "true" ]; do
-            echo "Waiting for the container to be ready...";
-            sleep 5;
-          done
-
-      # Запускаем тесты внутри контейнера
-      - name: Run tests inside Docker container
-        run: |
-          docker exec flask-microserv-api-v1-web-1 pytest --html=report.html --self-contained-html
-
-      # Копируем файл отчета из контейнера на хост Raspberry Pi
-      - name: Copy test report from Docker container to Raspberry Pi host
-        run: |
-          docker cp flask-microserv-api-v1-web-1:/app/report.html /home/dgornostaev/flask-rest-api-v1/
-
-      # Копируем файл отчета с Raspberry Pi на GitHub Actions runner
-      - name: Copy test reports from Raspberry Pi
-        run: |
-          scp -P 8022 dgornostaev@178.218.58.175:/home/dgornostaev/flask-rest-api-v1/report.html report.html
-
-      # Загрузка отчета как артефакта
-      - name: Upload HTML Report as Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: report-html
-          path: report.html
+            cd /path/to/your/project
+            docker-compose down
+            docker-compose up -d --build
+          EOF
