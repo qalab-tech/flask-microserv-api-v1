@@ -44,7 +44,7 @@ jobs:
         run: |
           echo "Waiting for PostgreSQL to be ready..."
           for i in {1..10}; do
-            if psql -h localhost -U test_user -d test_db -c '\q' 2>/dev/null; then
+            if psql -h postgres -U test_user -d test_db -c '\q' 2>/dev/null; then
               echo "PostgreSQL is ready!"
               break
             else
@@ -58,11 +58,11 @@ jobs:
           PGPASSWORD: test_password
         run: |
           echo "Creating table 'customers' in the test database"
-          psql -h localhost -U test_user -d test_db -c "CREATE TABLE IF NOT EXISTS customers (customer_id SERIAL PRIMARY KEY, name VARCHAR(100), address VARCHAR(200));"
+          psql -h postgres -U test_user -d test_db -c "CREATE TABLE IF NOT EXISTS customers (customer_id SERIAL PRIMARY KEY, name VARCHAR(100), address VARCHAR(200));"
 
       - name: Run tests and generate report
         env:
-          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+          DATABASE_URL: postgresql://test_user:test_password@postgres:5432/test_db
         run: |
           pytest tests --html=report.html --self-contained-html
 
