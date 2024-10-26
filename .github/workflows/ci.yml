@@ -68,10 +68,11 @@ jobs:
 
       - name: Run tests and generate report
         env:
-          BASE_URL: ${{ secrets.BASE_URL }}
-          DATABASE_URL: postgresql://test_user:test_password@127.0.0.1:5432/test_db
+            BASE_URL: ${{ secrets.BASE_URL }}
+            DATABASE_URL: postgresql://test_user:test_password@127.0.0.1:5432/test_db
         run: |
           pytest tests --html=report.html --self-contained-html
+      
 
       - name: Upload test report
         uses: actions/upload-artifact@v3
