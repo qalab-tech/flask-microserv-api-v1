@@ -40,6 +40,10 @@ jobs:
           pip install -r requirements.txt
           pip install python-dotenv
 
+      - name: Load environment variables
+        run: |
+          export $(grep -v '^#' .env | xargs)
+
       - name: Wait for PostgreSQL to be ready
         env:
           PGPASSWORD: test_password
@@ -64,6 +68,7 @@ jobs:
 
       - name: Run tests and generate report
         env:
+          BASE_URL: ${{ secrets.BASE_URL }}
           DATABASE_URL: postgresql://test_user:test_password@127.0.0.1:5432/test_db
         run: |
           pytest tests --html=report.html --self-contained-html
