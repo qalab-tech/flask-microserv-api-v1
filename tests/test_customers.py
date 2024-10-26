@@ -6,7 +6,7 @@ import os
 fake = Faker()
 
 # Flask microservice Base URL
-BASE_URL = os.getenv("BASE_URL", "http://loclhost:5000/api/v1/customers") # insead of "DATABASE_URL"
+BASE_URL = os.getenv("TEST_BASE_URL") # insead of "DATABASE_URL"
 
 
 # Fixture for customer data creation
