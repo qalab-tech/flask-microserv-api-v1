@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04-4xl
+    runs-on: ubuntu-latest
 
     services:
       postgres:
