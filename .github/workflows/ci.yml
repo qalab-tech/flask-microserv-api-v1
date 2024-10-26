@@ -1,4 +1,4 @@
-name: Test and Deploy on Raspberry PI 3B
+name: Deploy to Raspberry Pi 3B and Run Tests with Reports
 
 on:
   push:
@@ -19,6 +19,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
+          --memory=512m  # Ограничение памяти для контейнера PostgreSQL
           --health-cmd="pg_isready -U test_user"
           --health-interval=10s
           --health-timeout=5s
@@ -38,18 +39,29 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Wait for Postgres to be ready
+        run: |
+          for i in {1..10}; do
+            if pg_isready -h localhost -p 5432 -U test_user; then
+              echo "Postgres is ready!"
+              break
+            else
+              echo "Waiting for Postgres to be ready..."
+              sleep 5
+            fi
+          done
+
       - name: Run tests and generate report
         env:
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
         run: |
-          pytest tests --html=report.html  # Запуск тестов с генерацией отчета
+          pytest tests --maxfail=1 --html=report.html --self-contained-html
 
       - name: Upload test report
         uses: actions/upload-artifact@v3
         with:
           name: test-report
           path: report.html
-
   deploy:
     needs: test  # Джоба deploy будет выполняться после успешного завершения test
     runs-on: ubuntu-latest
