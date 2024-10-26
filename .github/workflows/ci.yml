@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04-4xl
 
     services:
       postgres:
@@ -18,7 +18,7 @@ jobs:
           POSTGRES_DB: test_db
         options: >-
           --memory=512m
-          --health-cmd="pg_isready -U test_user"
+          --health-cmd="pg_isready -U test_user -d test_db"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -36,19 +36,29 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install python-dotenv  # Для загрузки переменных из .env
+          pip install python-dotenv
 
-      - name: Load environment variables from .env
+      - name: Wait for PostgreSQL to be ready
+        env:
+          PGPASSWORD: test_password
         run: |
-          echo "Loading environment variables from .env"
-          python -c "from dotenv import load_dotenv; load_dotenv('.env')"
+          echo "Waiting for PostgreSQL to be ready..."
+          for i in {1..10}; do
+            if psql -h localhost -U test_user -d test_db -c '\q' 2>/dev/null; then
+              echo "PostgreSQL is ready!"
+              break
+            else
+              echo "PostgreSQL is not ready yet. Waiting..."
+              sleep 5
+            fi
+          done
 
       - name: Initialize the test database
         env:
-          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+          PGPASSWORD: test_password
         run: |
           echo "Creating table 'customers' in the test database"
-          psql $DATABASE_URL -c "CREATE TABLE IF NOT EXISTS customers (customer_id SERIAL PRIMARY KEY, name VARCHAR(100), address VARCHAR(200));"
+          psql -h localhost -U test_user -d test_db -c "CREATE TABLE IF NOT EXISTS customers (customer_id SERIAL PRIMARY KEY, name VARCHAR(100), address VARCHAR(200));"
 
       - name: Run tests and generate report
         env:
