@@ -16,10 +16,8 @@ jobs:
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_password
           POSTGRES_DB: test_db
-        ports:
-          - 5432:5432
         options: >-
-          --memory=512m  # Ограничение памяти для контейнера PostgreSQL
+          --memory=512m  # Ограничение памяти для PostgreSQL
           --health-cmd="pg_isready -U test_user"
           --health-interval=10s
           --health-timeout=5s
@@ -55,7 +53,8 @@ jobs:
         env:
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
         run: |
-          pytest tests --maxfail=1 --html=report.html --self-contained-html
+          docker exec --memory="512m" flask-microserv-api-v1-web-1 pytest --html=report.html --self-contained-html
+
 
       - name: Upload test report
         uses: actions/upload-artifact@v3
