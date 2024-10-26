@@ -17,11 +17,12 @@ jobs:
           POSTGRES_PASSWORD: test_password
           POSTGRES_DB: test_db
         options: >-
-          --memory=512m  # Ограничение памяти для PostgreSQL
+          --memory=512m
           --health-cmd="pg_isready -U test_user"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+    
 
     steps:
       - name: Checkout code
