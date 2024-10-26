@@ -44,7 +44,7 @@ jobs:
         run: |
           echo "Waiting for PostgreSQL to be fully ready..."
           for i in {1..10}; do
-            if [ "$(docker inspect --format='{{.State.Health.Status}}' $(docker-compose ps -q postgres))" = "healthy" ]; then
+            if [ "$(docker inspect --format='{{.State.Health.Status}}' $(docker compose ps -q postgres))" = "healthy" ]; then
               echo "PostgreSQL is healthy!"
               break
             else
