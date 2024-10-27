@@ -5,9 +5,10 @@ services:
       dockerfile: Dockerfile
     environment:
       - BASE_URL=${BASE_URL}
-      - DATABASE_URL=postgresql://postgres:Gl00m88@192.168.88.18/postgres  # Укажите IP Raspberry Pi
+      - DATABASE_URL=postgresql://postgres:Gl00m88@127.0.0.1/postgres  # Используем localhost как IP
     ports:
       - "5000:5000"
+    network_mode: "host"  # Доступ к сети хоста
     depends_on:
       - db
     restart: always

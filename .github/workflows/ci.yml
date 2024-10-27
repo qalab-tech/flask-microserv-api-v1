@@ -26,14 +26,11 @@ jobs:
             cd /home/dgornostaev/flask-rest-api-v1
 
             echo "Pulling latest changes and building Docker containers..."
-            BASE_URL=${BASE_URL} docker compose down
-            BASE_URL=${BASE_URL} docker compose up -d --build
+            BASE_URL=${BASE_URL} DATABASE_URL=postgresql://postgres:Gl00m88@127.0.0.1/postgres docker compose down
+            BASE_URL=${BASE_URL} DATABASE_URL=postgresql://postgres:Gl00m88@127.0.0.1/postgres docker compose up -d --build
 
             echo "Waiting for containers to be fully operational..."
             sleep 10
-
-            echo "Checking if Flask application container is running..."
-            docker compose ps | grep web || (echo "Flask container failed to start!" && exit 1)
 
             echo "Running tests inside the Flask application container..."
             docker compose exec web pytest tests --verbose --disable-warnings || (echo "Tests failed!" && exit 1)
