@@ -5,9 +5,9 @@ from app.logger_config import setup_logger
 
 logger = setup_logger("db_connection")
 
-# DATABASE_URL = os.getenv("DATABASE_URL")
-#DATABASE_URL = "postgresql://:5432/postgres?user=postgres&password=Gl00m88"
-BATABASE_URL = "postgresql://postgres:Gl00m88@192.168.88.18/postgres"
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+# DATABASE_URL = "postgresql://postgres:Gl00m88@192.168.88.18/postgres"
 # Init Pool
 try:
     connection_pool = psycopg2.pool.SimpleConnectionPool(1, 20, DATABASE_URL)
@@ -48,3 +48,6 @@ def close_all_connections():
             logger.info("All connections in the pool closed")
     except Exception as e:
         logger.error(f"Error closing all connections: {str(e)}")
+
+
+
