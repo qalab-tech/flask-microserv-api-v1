@@ -19,9 +19,9 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Deploy and Test on Raspberry Pi
-        env:
-          BASE_URL: ${{ secrets.BASE_URL }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+#        env:
+#          BASE_URL: ${{ secrets.BASE_URL }}
+#          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
             cd /home/dgornostaev/flask-rest-api-v1
@@ -34,10 +34,10 @@ jobs:
             sleep 10
 
             echo "Checking if Flask application container is running..."
-            docker-compose ps | grep web || (echo "Flask container failed to start!" && exit 1)
+            docker compose ps | grep web || (echo "Flask container failed to start!" && exit 1)
 
             echo "Running tests inside the Flask application container..."
-            docker-compose exec web pytest tests --verbose --disable-warnings || (echo "Tests failed!" && exit 1)
+            docker compose exec web pytest tests --verbose --disable-warnings || (echo "Tests failed!" && exit 1)
 
             echo "Tests completed successfully!"
           EOF
