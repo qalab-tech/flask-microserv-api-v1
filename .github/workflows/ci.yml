@@ -23,11 +23,9 @@ jobs:
           BASE_URL: ${{ secrets.BASE_URL }}
         run: |
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
-            # Переход к директории с приложением
             cd /home/dgornostaev/flask-rest-api-v1
 
             echo "Pulling latest changes and building Docker containers..."
-            # Перезапуск Docker Compose с новыми переменными окружения
             BASE_URL=${BASE_URL} docker compose down
             BASE_URL=${BASE_URL} docker compose up -d --build
 
