@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      BASE_URL: ${BASE_URL}
-      DATABASE_URL: ${DATABASE_URL} # Переменная теперь должна быть обновлена на `postgresql://postgres:Gl00m88@db/postgres`
+      - BASE_URL=${BASE_URL}           # Использует значение BASE_URL из окружения
+      - DATABASE_URL=${DATABASE_URL}    # Использует значение DATABASE_URL из окружения
     ports:
       - "5000:5000"
     depends_on:
@@ -15,9 +15,9 @@ services:
   db:
     image: postgres:13
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Gl00m88
-      POSTGRES_DB: postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Gl00m88
+      - POSTGRES_DB=postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -26,3 +26,4 @@ services:
 
 volumes:
   postgres_data:
+
