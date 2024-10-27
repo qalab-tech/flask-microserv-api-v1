@@ -11,17 +11,20 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Copy .env to Raspberry Pi
+        run: |
+          scp -P 8022 .env dgornostaev@178.218.58.175:/home/dgornostaev/flask-rest-api-v1/.env
+
       - name: Deploy and Test on Raspberry Pi
         run: |
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
-            echo "Navigating to application directory on Raspberry Pi..."
             cd /home/dgornostaev/flask-rest-api-v1
 
             echo "Pulling latest changes and building Docker containers..."
@@ -29,7 +32,7 @@ jobs:
             docker compose up -d --build
 
             echo "Waiting for containers to be fully operational..."
-            sleep 10  # Увеличьте, если база данных поднимается дольше
+            sleep 10  # Увеличьте время ожидания, если база данных поднимается дольше
 
             echo "Checking if Flask application container is running..."
             docker ps | grep web || (echo "Flask container failed to start!" && exit 1)
