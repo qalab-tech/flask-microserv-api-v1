@@ -36,8 +36,5 @@ jobs:
             echo "Checking if Flask application container is running..."
             docker compose ps | grep web || (echo "Flask container failed to start!" && exit 1)
 
-#            echo "Running tests inside the Flask application container..."
-#            docker compose exec web pytest tests --verbose --disable-warnings || (echo "Tests failed!" && exit 1)
-#
-#            echo "Tests completed successfully!"
+
           EOF
