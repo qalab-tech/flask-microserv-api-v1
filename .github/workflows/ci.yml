@@ -16,17 +16,12 @@ jobs:
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Добавляем ключ из секретов
-
-      - name: Copy .env to Raspberry Pi
-        run: |
-          scp -P 8022 -o StrictHostKeyChecking=no .env dgornostaev@178.218.58.175:/home/dgornostaev/flask-rest-api-v1/.env
-
-      - name: Verify .env on Raspberry Pi
-        run: |
-          ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 'ls /home/dgornostaev/flask-rest-api-v1/.env'
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Deploy and Test on Raspberry Pi
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
             cd /home/dgornostaev/flask-rest-api-v1
@@ -36,13 +31,13 @@ jobs:
             docker compose up -d --build
 
             echo "Waiting for containers to be fully operational..."
-            sleep 10  # При необходимости увеличить время ожидания
+            sleep 10  # Увеличьте время ожидания, если нужно больше времени для старта
 
             echo "Checking if Flask application container is running..."
-            docker ps | grep web || (echo "Flask container failed to start!" && exit 1)
+            docker-compose ps | grep web || (echo "Flask container failed to start!" && exit 1)
 
             echo "Running tests inside the Flask application container..."
-            docker exec web pytest tests --verbose --disable-warnings || (echo "Tests failed!" && exit 1)
+            docker-compose exec web pytest tests --verbose --disable-warnings || (echo "Tests failed!" && exit 1)
 
             echo "Tests completed successfully!"
           EOF
