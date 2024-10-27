@@ -3,14 +3,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      - BASE_URL=${BASE_URL}           # Использует значение BASE_URL из окружения
-      - DATABASE_URL=${DATABASE_URL}    # Использует значение DATABASE_URL из окружения
+    env_file:
+      - .env
     ports:
       - "5000:5000"
     depends_on:
       - db
-    restart: always
+    restart: "no"
 
   db:
     image: postgres:13
