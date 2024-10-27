@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - BASE_URL=${BASE_URL}
-      - DATABASE_URL=${DATABASE_URL}
+      BASE_URL: ${BASE_URL}
+      DATABASE_URL: "postgresql://postgres:Gl00m88@host.docker.internal:5432/postgres"  # Подключение к базе на хосте Raspberry Pi
     ports:
       - "5000:5000"
     depends_on:
@@ -13,7 +13,7 @@ services:
     restart: always
 
   db:
-    image: postgres:13  # Укажите подходящую версию Postgres
+    image: postgres:13
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Gl00m88

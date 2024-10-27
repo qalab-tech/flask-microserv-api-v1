@@ -21,14 +21,15 @@ jobs:
       - name: Deploy and Test on Raspberry Pi
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
+            # Переход к директории с приложением
             cd /home/dgornostaev/flask-rest-api-v1
 
             echo "Pulling latest changes and building Docker containers..."
-            BASE_URL=${BASE_URL} DATABASE_URL=${DATABASE_URL} docker compose down
-            BASE_URL=${BASE_URL} DATABASE_URL=${DATABASE_URL} docker compose up -d --build
+            # Перезапуск Docker Compose с новыми переменными окружения
+            BASE_URL=${BASE_URL} docker compose down
+            BASE_URL=${BASE_URL} docker compose up -d --build
 
             echo "Waiting for containers to be fully operational..."
             sleep 10
@@ -36,5 +37,8 @@ jobs:
             echo "Checking if Flask application container is running..."
             docker compose ps | grep web || (echo "Flask container failed to start!" && exit 1)
 
+            echo "Running tests inside the Flask application container..."
+            docker compose exec web pytest tests --verbose --disable-warnings || (echo "Tests failed!" && exit 1)
 
+            echo "Tests completed successfully!"
           EOF
