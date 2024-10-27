@@ -19,16 +19,16 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Deploy and Test on Raspberry Pi
-#        env:
-#          BASE_URL: ${{ secrets.BASE_URL }}
-#          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
             cd /home/dgornostaev/flask-rest-api-v1
 
             echo "Pulling latest changes and building Docker containers..."
-            docker compose down
-            docker compose up -d --build
+            BASE_URL=${BASE_URL} DATABASE_URL=${DATABASE_URL} docker compose down
+            BASE_URL=${BASE_URL} DATABASE_URL=${DATABASE_URL} docker compose up -d --build
 
             echo "Waiting for containers to be fully operational..."
             sleep 10

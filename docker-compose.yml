@@ -3,24 +3,26 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - BASE_URL=${BASE_URL}
+      - DATABASE_URL=${DATABASE_URL}
     ports:
       - "5000:5000"
     depends_on:
       - db
     restart: always
-    env_file: .env  # Указываем путь к файлу .env
 
   db:
-    image: postgres  # Официальный образ Postgres
+    image: postgres:13  # Укажите подходящую версию Postgres
     environment:
-      POSTGRES_USER: postgres  # Пользователь базы данных
-      POSTGRES_PASSWORD: Gl00m88  # Пароль базы данных
-      POSTGRES_DB: postgres  # Имя базы данных
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Gl00m88
+      POSTGRES_DB: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Создание тома для хранения данных БД
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"  # Проброс порта для подключения снаружи
+      - "5432:5432"
     restart: always
 
 volumes:
-  postgres_data:  # Определение тома для хранения данных Postgres
+  postgres_data:
