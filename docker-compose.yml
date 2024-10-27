@@ -4,11 +4,10 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - BASE_URL=${BASE_URL}
-      - DATABASE_URL=postgresql://postgres:Gl00m88@127.0.0.1/postgres  # Используем localhost как IP
+      BASE_URL: ${BASE_URL}
+      DATABASE_URL: ${DATABASE_URL} # Переменная теперь должна быть обновлена на `postgresql://postgres:Gl00m88@db/postgres`
     ports:
       - "5000:5000"
-    network_mode: "host"  # Доступ к сети хоста
     depends_on:
       - db
     restart: always
