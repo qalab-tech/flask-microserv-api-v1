@@ -5,15 +5,6 @@ from app.logger_config import setup_logger
 
 logger = setup_logger("db_connection")
 
-# ENVIRONMENT = os.getenv("ENVIRONMENT", "production")
-#
-# # Postgres database connection
-#
-# if ENVIRONMENT == "test":
-#     # Use test database
-#     DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:test_password@localhost:5433/test_db")
-# else:
-# Use production Database
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Init Pool

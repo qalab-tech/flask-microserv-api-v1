@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - main
+
 jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -14,12 +18,25 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to Raspberry Pi
+      - name: Deploy and Test on Raspberry Pi
         run: |
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
+            echo "Navigating to application directory on Raspberry Pi..."
             cd /home/dgornostaev/flask-rest-api-v1
+
+            echo "Pulling latest changes and building Docker containers..."
             docker compose down
             docker compose up -d --build
-            docker ps
-            
+
+            echo "Waiting for containers to be fully operational..."
+            sleep 10  # Увеличьте, если база данных поднимается дольше
+
+            echo "Checking if Flask application container is running..."
+            docker ps | grep web || (echo "Flask container failed to start!" && exit 1)
+
+            echo "Running tests inside the Flask application container..."
+            docker exec web pytest tests --verbose --disable-warnings || (echo "Tests failed!" && exit 1)
+
+            echo "Tests completed successfully!"
           EOF
+

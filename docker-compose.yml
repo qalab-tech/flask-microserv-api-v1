@@ -5,24 +5,24 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
+    environment:
+      BASE_URL: http://web:5000/api/v1/customers  # BASE_URL для тестов
+      DATABASE_URL: postgresql://postgres:Gl00m88@db:5432/postgres  # DATABASE_URL для подключения к Postgres
     depends_on:
       - db
-    restart:
-      always
-
+    restart: always
 
   db:
-    image: postgres  # Use the official Postgres Image
+    image: postgres  # Официальное изображение Postgres
     environment:
-      POSTGRES_USER: postgres # DB User
-      POSTGRES_PASSWORD: Gl00m88  # DB Password
-      POSTGRES_DB: postgres  # Our Postgres Database
+      POSTGRES_USER: postgres  # Пользователь БД
+      POSTGRES_PASSWORD: Gl00m88  # Пароль БД
+      POSTGRES_DB: postgres  # Имя БД
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Create volume for DB Storage
+      - postgres_data:/var/lib/postgresql/data  # Создание тома для хранения данных Postgres
     ports:
-      - "5432:5432"  # Forward ports if you need to connect from the outside
-    restart:
-      always
+      - "5432:5432"  # Проброс порта для подключения извне, если нужно
+    restart: always
 
 volumes:
-  postgres_data:  # Defining a volume for storing Postgres data
+  postgres_data:  # Определение тома для данных Postgres

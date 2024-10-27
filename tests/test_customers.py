@@ -6,8 +6,8 @@ import os
 fake = Faker()
 
 # Flask microservice Base URL
-# BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:5000/api/v1/customers") # insead of "DATABASE_URL"
-BASE_URL = "http://127.0.0.1:5000/api/v1/customers"
+BASE_URL = os.getenv("BASE_URL")
+
 
 # Fixture for customer data creation
 @pytest.fixture
