@@ -31,16 +31,26 @@ jobs:
             docker compose up -d --build
 
             echo "Waiting for containers to be fully operational..."
-            sleep 10  # Увеличьте время ожидания при необходимости
+            sleep 10
 
             echo "Checking if Flask application container is running..."
-            docker compose ps | grep web || (echo "Flask container failed to start!" && exit 1)
+            docker-compose ps | grep web || (echo "Flask container failed to start!" && exit 1)
 
             echo "Checking if DATABASE_URL is accessible inside the web container..."
-            docker compose exec web bash -c 'echo $DATABASE_URL && pg_isready -h db -p 5432 -U postgres' || (echo "Database connection failed!" && exit 1)
+            docker-compose exec web python -c """
+import os
+import psycopg2
+try:
+    conn = psycopg2.connect(os.getenv('DATABASE_URL'))
+    print('Database connection successful.')
+    conn.close()
+except Exception as e:
+    print(f'Database connection failed: {e}')
+    exit(1)
+""" || (echo "Database connection failed!" && exit 1)
 
             echo "Running tests inside the Flask application container..."
-            docker compose exec web pytest tests --verbose --disable-warnings || (echo "Tests failed!" && exit 1)
+            docker-compose exec web pytest tests --verbose --disable-warnings || (echo "Tests failed!" && exit 1)
 
             echo "Tests completed successfully!"
           EOF
