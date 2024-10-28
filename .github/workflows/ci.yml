@@ -1,4 +1,4 @@
-name: Test and Deploy on Raspberry PI 3B
+name: Test and Deploy on Raspberry PI New
 
 on:
   push:
@@ -19,9 +19,6 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Deploy and Test on Raspberry Pi
-        env:
-          BASE_URL: ${{ secrets.BASE_URL }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           ssh -p 8022 -o StrictHostKeyChecking=no dgornostaev@178.218.58.175 << 'EOF'
             cd /home/dgornostaev/flask-rest-api-v1
