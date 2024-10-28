@@ -26,12 +26,9 @@ jobs:
             echo "Pulling latest changes and building Docker containers with environment variables..."
             docker compose down
             docker compose up -d --build
-
             echo "Waiting for containers to be fully operational..."
             sleep 10
-
             echo "Running tests inside the Flask application container..."
-#            docker compose exec web pytest tests --verbose --disable-warnings || (echo "Tests failed!" && exit 1)
             docker compose exec web pytest tests --verbose
             echo "Tests completed successfully!"
           EOF
