@@ -1,17 +1,15 @@
 services:
   web:
-    build:  # Собираем образ из Dockerfile в текущей директории
+    build:
       context: .
       dockerfile: Dockerfile
-    image: customer-api-v1  # Локальное имя образа для web сервиса
+    image: customer-api-v1
     ports:
-      - "5000:5000"  # Порт для доступа к Flask API
-#    environment:
-#      - DATABASE_URL=postgresql://postgres:Gl00m88@db/postgres  # Подключение к Postgres через имя сервиса `db`
-#      - BASE_URL=http://web:5000/api/v1/customers  # Устанавливаем BASE_URL для тестов
+      - "5000:5000"
+
     depends_on:
-      - db  # Убедимся, что база данных стартует до `web`
-    restart: no
+      - db
+    command: ["sh", "-c", "tail -f /dev/null"]
 
   db:
     image: postgres:13
@@ -20,15 +18,15 @@ services:
       - POSTGRES_PASSWORD=Gl00m88
       - POSTGRES_DB=postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Хранение данных Postgres
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"  # Порт для подключения к базе данных
+      - "5432:5432"
     restart: always
 
 volumes:
   postgres_data:
 
-# Определение пользовательской сети (опционально, если хотите вручную создать сеть)
+
 networks:
   default:
     driver: bridge

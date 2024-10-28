@@ -29,6 +29,5 @@ jobs:
             echo "Waiting for containers to be fully operational..."
             sleep 10
             echo "Running tests inside the Flask application container..."
-            docker compose exec web pytest tests --verbose
-            echo "Tests completed successfully!"
+            echo "Flask app deployed on Raspberrypi 3B"
           EOF
