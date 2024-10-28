@@ -9,7 +9,7 @@ services:
 
     depends_on:
       - db
-    command: ["sh", "-c", "tail -f /dev/null"]
+    restart: always
 
   db:
     image: postgres:13
