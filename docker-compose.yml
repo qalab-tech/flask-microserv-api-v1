@@ -9,10 +9,10 @@ services:
     depends_on:
       - db  # The container with Postgres starts earlier
     restart:
-      always
+      no
 
   db:
-    image: postgres:13
+    image: postgres:15
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=Gl00m88
