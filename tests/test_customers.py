@@ -7,7 +7,7 @@ fake = Faker()
 
 # Flask microservice Base URL
 # BASE_URL = os.getenv("BASE_URL")
-BASE_URL = "http://web:5000/api/v1/customers"
+BASE_URL = "http://localhost:5000/api/v1/customers"
 
 
 # Fixture for customer data creation
