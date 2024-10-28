@@ -6,9 +6,9 @@ services:
     image: customer-api-v1  # Локальное имя образа для web сервиса
     ports:
       - "5000:5000"  # Порт для доступа к Flask API
-    environment:
-      - DATABASE_URL=postgresql://postgres:Gl00m88@db/postgres  # Подключение к Postgres через имя сервиса `db`
-      - BASE_URL=http://web:5000/api/v1/customers  # Устанавливаем BASE_URL для тестов
+#    environment:
+#      - DATABASE_URL=postgresql://postgres:Gl00m88@db/postgres  # Подключение к Postgres через имя сервиса `db`
+#      - BASE_URL=http://web:5000/api/v1/customers  # Устанавливаем BASE_URL для тестов
     depends_on:
       - db  # Убедимся, что база данных стартует до `web`
     restart: no
