@@ -12,7 +12,7 @@ services:
     restart: always
 
   db:
-    image: postgres-latest
+    image: postgres:latest
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=Gl00m88
