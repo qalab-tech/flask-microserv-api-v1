@@ -29,5 +29,6 @@ jobs:
             echo "Waiting for containers to be fully operational..."
             sleep 10
             echo "Running tests inside the Flask application container..."
+            docker exec flask-rest-api-v1-web-1 pytest tests/ --verbose
             echo "Flask app deployed on Raspberrypi 3B"
           EOF
