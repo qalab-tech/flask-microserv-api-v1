@@ -1,10 +1,10 @@
-# Используем базовый образ Python
+# Add the basic Python image
 FROM python:3.11-slim
 
-# Устанавливаем рабочую директорию
+# Set the working directory
 WORKDIR /app
 
-# Устанавливаем системные зависимости, включая CMake и необходимые библиотеки для компиляции
+# Install all system dependencies, including CMake and other libraries
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
@@ -18,15 +18,15 @@ RUN apt-get update && apt-get install -y \
 # Upgrade pip
 RUN pip install --upgrade pip
 
-# Копируем requirements.txt и устанавливаем все зависимости
+# Copy requirements.txt and install all the dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем все остальные файлы приложения
+# Copy other application files
 COPY . .
 
-# Открываем порт 5000 для Flask
+# Expose port 5000
 EXPOSE 5000
 
-# Запуск Flask приложения с Gunicorn
+# Run Flask app with Gunicorn
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]

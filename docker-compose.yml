@@ -6,7 +6,7 @@ services:
     image: customer-api-v1
     environment:
       - BASE_URL
-      - DATABASE_URL
+      - CUSTOMERS_DATABASE_URL
     ports:
       - "5000:5000"
 
