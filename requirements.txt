@@ -3,6 +3,7 @@ faker
 flask
 locust
 pyyaml
+pyjwt
 flask-sqlalchemy
 pytest
 requests
