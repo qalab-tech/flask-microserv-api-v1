@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from app.services.customer_service import get_customers, get_customer_by_id, create_customer, update_customer, \
     delete_customer
 from app.logger_config import setup_logger
+from functools import wraps
 import jwt
 import os
 
