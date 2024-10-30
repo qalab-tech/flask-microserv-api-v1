@@ -6,8 +6,17 @@ import os
 fake = Faker()
 
 # Flask microservice Base URL
-BASE_URL = os.getenv("CUSTOMERS_BASE_URL")
+BASE_URL = os.getenv("CUSTOMERS_BASE_URL", "http://localhost:5000/api/v1/customers")
 
+@pytest.fixture(scope="session")
+def auth_token():
+    url = "http://localhost:5001/auth/login"  # Подставьте правильный URL авторизации
+    credentials = {"username": "test", "password": "test"}
+    response = requests.post(url, json=credentials)
+    response.raise_for_status()
+
+    token = response.json()["token"]
+    return f"Bearer {token}"
 
 # Fixture for customer data creation
 @pytest.fixture
@@ -46,10 +55,11 @@ def test_get_all_customers():
     assert isinstance(response.json(), list)
 
 
-def test_get_customer(new_customer):
+def test_get_customer(new_customer, auth_token):
     """Test get customer by id"""
     customer_id = new_customer["customer_id"]
-    response = requests.get(f"{BASE_URL}/{customer_id}")
+    headers = {"Authorization": auth_token}
+    response = requests.get(f"{BASE_URL}/{customer_id}", headers=headers)
     customer = response.json()
     assert response.status_code == 200
     assert isinstance(customer, dict)
