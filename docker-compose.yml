@@ -1,19 +1,39 @@
 services:
-  web:
+  # Auth Service
+  auth_service:
     build:
-      context: .
+      context: /home/dgornostaev/flask-auth-jwt
       dockerfile: Dockerfile
-    image: customer-api-v1
+    image: auth-service
     environment:
-      - BASE_URL
-      - CUSTOMERS_DATABASE_URL
+      - AUTH_DATABASE_URL=${AUTH_DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
     ports:
-      - "5000:5000"
-
+      - "5001:5001"
     depends_on:
       - db
     restart: always
+    networks:
+      - backend_network
 
+  # Flask API Service
+  web:
+    build:
+      context: /home/dgornostaev/flask-rest-api-v1
+      dockerfile: Dockerfile
+    image: customer-api-v1
+    environment:
+      - BASE_URL=${BASE_URL}
+      - CUSTOMERS_DATABASE_URL=${CUSTOMERS_DATABASE_URL}
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - backend_network
+
+  # Postgres Database
   db:
     image: postgres:17
     environment:
@@ -25,11 +45,12 @@ services:
     ports:
       - "5432:5432"
     restart: always
+    networks:
+      - backend_network
 
 volumes:
   postgres_data:
 
-
 networks:
-  default:
+  backend_network:
     driver: bridge
