@@ -28,8 +28,9 @@ services:
       dockerfile: Dockerfile
     image: customer-api-v1
     environment:
-      - CUSTOMERS_BASE_URL
+      - CUSTOMERS_BASE_URL=http://localhost:5000/api/v1/customers
       - CUSTOMERS_DATABASE_URL
+      - SECRET_KEY=hudTTPZbw6WV4yxEUnVdT5CooIT1TepeD0-Nwlw_-D4
     ports:
       - "5000:5000"
     depends_on:
