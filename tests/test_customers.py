@@ -8,49 +8,53 @@ fake = Faker()
 # Flask microservice Base URL
 BASE_URL = os.getenv("CUSTOMERS_BASE_URL", "http://localhost:5000/api/v1/customers")
 
+
 @pytest.fixture(scope="session")
 def auth_token():
-    url = "http://192.168.88.18:5001/auth/login"  # Подставьте правильный URL авторизации
+    """Get auth token"""
+    url = "http://192.168.88.18:5001/auth/login"  # URL для авторизации
     credentials = {"username": "test", "password": "test"}
     response = requests.post(url, json=credentials)
     response.raise_for_status()
-
     token = response.json()["token"]
     return f"Bearer {token}"
 
-# Fixture for customer data creation
+
 @pytest.fixture
 def new_customer_data():
+    """Fake customer data generation"""
     return {"name": fake.name(), "address": fake.address()}
 
 
-# Fixture to create a new customer in database
 @pytest.fixture
-def new_customer(new_customer_data):
-    response = requests.post(BASE_URL, json=new_customer_data)
+def new_customer(new_customer_data, auth_token):
+    """Create a new customer in the database and delete after the test"""
+    headers = {"Authorization": auth_token}
+    response = requests.post(BASE_URL, json=new_customer_data, headers=headers)
     assert response.status_code == 201
     customer = response.json()
-    yield customer  # get customer data for using in tests
-    # Delete customer after all tests
-    requests.delete(f"{BASE_URL}/{customer['customer_id']}")
+    yield customer
+    # Удаление клиента после тестов
+    requests.delete(f"{BASE_URL}/{customer['customer_id']}", headers=headers)
 
 
-# New customer creation test
-def test_create_customer(new_customer_data):
-    """Create new customer test"""
-    response = requests.post(BASE_URL, json=new_customer_data)
+def test_create_customer(new_customer_data, auth_token):
+    """Test create new customer"""
+    headers = {"Authorization": auth_token}
+    response = requests.post(BASE_URL, json=new_customer_data, headers=headers)
     assert response.status_code == 201
     customer = response.json()
     assert "customer_id" in customer
     assert customer["name"] == new_customer_data["name"]
     assert customer["address"] == new_customer_data["address"]
-    # Remove created customer
-    requests.delete(f"{BASE_URL}/{customer['customer_id']}")
+    # Удаление клиента после создания
+    requests.delete(f"{BASE_URL}/{customer['customer_id']}", headers=headers)
 
 
-def test_get_all_customers():
-    """GET all customers test"""
-    response = requests.get(BASE_URL)
+def test_get_all_customers(auth_token):
+    """Test all customers"""
+    headers = {"Authorization": auth_token}
+    response = requests.get(BASE_URL, headers=headers)
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
@@ -65,39 +69,34 @@ def test_get_customer(new_customer, auth_token):
     assert isinstance(customer, dict)
 
 
-def test_update_customer(new_customer, new_customer_data):
+def test_update_customer(new_customer, new_customer_data, auth_token):
     """Test UPDATE customer"""
     customer_id = new_customer["customer_id"]
-
-    # New customer data for update
+    headers = {"Authorization": auth_token}
     updated_data = {
         "name": new_customer_data["name"],
         "address": new_customer_data["address"]
     }
-
-    # Send UPDATE request
-    response = requests.put(f"{BASE_URL}/{customer_id}", json=updated_data)
+    response = requests.put(f"{BASE_URL}/{customer_id}", json=updated_data, headers=headers)
     assert response.status_code == 200
-
-    # Check of correct data UPDATE
     updated_customer = response.json()
     assert updated_customer["name"] == updated_data["name"]
     assert updated_customer["address"] == updated_data["address"]
 
-    # Additional UPDATE check
-    response = requests.get(f"{BASE_URL}/{customer_id}")
+    # Additional data update check
+    response = requests.get(f"{BASE_URL}/{customer_id}", headers=headers)
     assert response.status_code == 200
     customer = response.json()
     assert customer["name"] == updated_data["name"]
     assert customer["address"] == updated_data["address"]
 
 
-def test_delete_customer(new_customer):
+def test_delete_customer(new_customer, auth_token):
     """Test DELETE customer"""
     customer_id = new_customer["customer_id"]
-    # Delete customer
-    response = requests.delete(f"{BASE_URL}/{customer_id}")
+    headers = {"Authorization": auth_token}
+    response = requests.delete(f"{BASE_URL}/{customer_id}", headers=headers)
     assert response.status_code == 200
-    # Check the customer doesn't exist
-    response = requests.get(f"{BASE_URL}/{customer_id}")
+    # Check that customer is deleted
+    response = requests.get(f"{BASE_URL}/{customer_id}", headers=headers)
     assert response.status_code == 404

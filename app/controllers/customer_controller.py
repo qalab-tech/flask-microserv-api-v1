@@ -6,11 +6,11 @@ from functools import wraps
 import jwt
 import os
 
-
 logger = setup_logger("customer_controller")
 customer_bp = Blueprint('customers', __name__)
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+
 
 def token_required(f):
     @wraps(f)
@@ -34,6 +34,7 @@ def token_required(f):
 
 
 @customer_bp.route('/', methods=['GET'])
+@token_required
 def get_customers_route():
     """GET all customers"""
     customers = get_customers()
@@ -41,6 +42,7 @@ def get_customers_route():
 
 
 @customer_bp.route('/', methods=['POST'])
+@token_required
 def create_customer_route():
     """POST create new customer"""
     data = request.json
@@ -64,6 +66,7 @@ def get_customer_route(customer_id):
 
 
 @customer_bp.route('/<int:customer_id>', methods=['PUT'])
+@token_required
 def update_customer_route(customer_id):
     """PUT update customer"""
     data = request.json
@@ -72,6 +75,7 @@ def update_customer_route(customer_id):
 
 
 @customer_bp.route('/<int:customer_id>', methods=['DELETE'])
+@token_required
 def delete_customer_route(customer_id):
     """DELETE customer by ID"""
     response, status = delete_customer(customer_id)
