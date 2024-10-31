@@ -1,4 +1,4 @@
-name: Test and Deploy on Raspberry PI 3B
+name: Test and Deploy on Raspberry PI 3B (Docker-host)
 
 on:
   push:
@@ -25,24 +25,21 @@ jobs:
             cd /home/dgornostaev/flask-rest-api-v1
             git pull origin main
             
-            # Rebuilding and restarting docker containers with forced re-creation
-            echo "Building and recreating Docker containers with updated code for Flask API..."
-            docker compose -f docker-compose.yml down
-            docker compose -f docker-compose.yml up -d --build --force-recreate
-            
-            # Go to the second project directory and pull the code
+            # Go to the first project directory and pull the code
             cd /home/dgornostaev/flask-auth-jwt
             git pull origin main
             
-            echo "Building and recreating Docker containers with updated code for Auth API..."
+            # Rebuild and restart containers using docker-compose.yml
+            echo "Building and recreating Docker containers with updated code..."
+            cd /home/dgornostaev/flask-rest-api-v1
             docker compose -f docker-compose.yml down
             docker compose -f docker-compose.yml up -d --build --force-recreate
             
-            # Waiting for containers to be ready
+            # Wait for containers to be ready
             echo "Waiting for containers to be fully operational..."
             sleep 10
 
-            # Run tests
+            # Run tests inside web docker container
             echo "Running tests inside the Flask application container..."
             docker compose -f docker-compose.yml exec web pytest tests --verbose --disable-warnings || (echo "Tests failed!" && exit 1)
             
