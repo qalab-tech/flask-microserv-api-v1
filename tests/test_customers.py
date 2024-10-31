@@ -10,7 +10,7 @@ BASE_URL = os.getenv("CUSTOMERS_BASE_URL", "http://localhost:5000/api/v1/custome
 
 @pytest.fixture(scope="session")
 def auth_token():
-    url = "http://localhost:5001/auth/login"  # Подставьте правильный URL авторизации
+    url = "http://192.168.88.18:5001/auth/login"  # Подставьте правильный URL авторизации
     credentials = {"username": "test", "password": "test"}
     response = requests.post(url, json=credentials)
     response.raise_for_status()
