@@ -8,7 +8,7 @@ services:
     environment:
       - AUTH_DATABASE_URL
       - SECRET_KEY
-      - TZ: 'Europe/Moscow'
+      - TZ=Europe/Moscow
     ports:
       - "5001:5001"
     depends_on:
@@ -32,7 +32,7 @@ services:
       - CUSTOMERS_BASE_URL=http://localhost:5000/api/v1/customers
       - CUSTOMERS_DATABASE_URL
       - SECRET_KEY=hudTTPZbw6WV4yxEUnVdT5CooIT1TepeD0-Nwlw_-D4
-      - TZ: 'Europe/Moscow'
+      - TZ=Europe/Moscow
     ports:
       - "5000:5000"
     depends_on:
@@ -53,7 +53,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=Gl00m88
       - POSTGRES_DB=postgres
-      - TZ: 'Europe/Moscow'
+      - TZ=Europe/Moscow
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
