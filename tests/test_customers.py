@@ -34,7 +34,7 @@ def new_customer(new_customer_data, auth_token):
     assert response.status_code == 201
     customer = response.json()
     yield customer
-    # Удаление клиента после тестов
+    # Delete customer after test
     requests.delete(f"{BASE_URL}/{customer['customer_id']}", headers=headers)
 
 
@@ -47,7 +47,7 @@ def test_create_customer(new_customer_data, auth_token):
     assert "customer_id" in customer
     assert customer["name"] == new_customer_data["name"]
     assert customer["address"] == new_customer_data["address"]
-    # Удаление клиента после создания
+    # Delete new created customer
     requests.delete(f"{BASE_URL}/{customer['customer_id']}", headers=headers)
 
 
