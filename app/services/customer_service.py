@@ -50,6 +50,8 @@ def update_customer(customer_id, data):
 def delete_customer(customer_id):
     deleted_customer_id = delete_customer_in_db(customer_id)
     if deleted_customer_id:
+        logger.info(f"Customer with id={customer_id} deleted successfully")
         return {"message": "Customer deleted"}, 200
     else:
+        logger.error(f"Customer with id={customer_id} not found")
         return {"error": "Customer not found"}, 404
