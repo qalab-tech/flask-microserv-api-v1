@@ -29,21 +29,31 @@ customer_model = customers_ns.model('Customer', {
 
 
 # Decorator for token validation
+from functools import wraps
+from flask import request, jsonify
+
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.headers.get("Authorization")
+        token = request.headers.get('Authorization')
+
         if not token:
-            return jsonify({"message": "Token is missing!"}), 403
+            return jsonify({'message': 'Token is missing!'}), 403
 
         try:
-            # Extract token without the "Bearer" prefix
+            # Remove "Bearer" prefix if exists
             token = token.split()[1] if "Bearer" in token else token
+
+            # Decoding a token with expiration check
             jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+
         except jwt.ExpiredSignatureError:
-            return jsonify({"message": "Token has expired"}), 401
+            # Token expired
+            return jsonify({'message': 'Token is expired!'}), 401
         except jwt.InvalidTokenError:
-            return jsonify({"message": "Invalid token"}), 403
+            # Invalid token
+            return jsonify({'message': 'Invalid token!'}), 403
 
         return f(*args, **kwargs)
 
