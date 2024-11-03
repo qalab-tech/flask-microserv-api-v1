@@ -51,7 +51,10 @@ def token_required(f):
 
 
 # Route to get all customers
-@customers_ns.route('/customers')
+# Correct the import statements and definitions as they are already done properly
+
+# Adjusted route paths
+@customers_ns.route('/')  # This will map to /api/v1/customers/
 class CustomerList(Resource):
     @customers_ns.doc('get_customers')
     @customers_ns.response(200, 'Success')
@@ -73,8 +76,8 @@ class CustomerList(Resource):
         return jsonify(response), status
 
 
-# Route for operations on a specific customer by ID
-@customers_ns.route('/customers/<int:customer_id>')
+# Adjusted specific customer route path
+@customers_ns.route('/<int:customer_id>')  # This maps to /api/v1/customers/<customer_id>
 @customers_ns.param('customer_id', 'The ID of the customer')
 class Customer(Resource):
     @customers_ns.doc('get_customer')
@@ -108,5 +111,3 @@ class Customer(Resource):
         """DELETE customer by ID"""
         response, status = delete_customer(customer_id)
         return jsonify(response), status
-
-
