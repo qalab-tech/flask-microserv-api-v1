@@ -74,7 +74,7 @@ class CustomerList(Resource):
 
 
 # Route for operations on a specific customer by ID
-@customers_ns.route('customers/<int:customer_id>')
+@customers_ns.route('/customers/<int:customer_id>')
 @customers_ns.param('customer_id', 'The ID of the customer')
 class Customer(Resource):
     @customers_ns.doc('get_customer')
