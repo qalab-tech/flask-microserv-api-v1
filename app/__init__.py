@@ -6,7 +6,7 @@ def create_app():
     app = Flask(__name__)
 
     # Register BluePrint
-    app.register_blueprint(customers_bp, url_prefix='/api/v1/customers')
+    app.register_blueprint(customers_bp, url_prefix='/api/v1')
 
     return app
 

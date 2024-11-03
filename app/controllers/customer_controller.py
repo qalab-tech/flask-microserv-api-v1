@@ -51,7 +51,7 @@ def token_required(f):
 
 
 # Route to get all customers
-@customers_ns.route('/')
+@customers_ns.route('/customers')
 class CustomerList(Resource):
     @customers_ns.doc('get_customers')
     @customers_ns.response(200, 'Success')
@@ -74,7 +74,7 @@ class CustomerList(Resource):
 
 
 # Route for operations on a specific customer by ID
-@customers_ns.route('/<int:customer_id>')
+@customers_ns.route('customers/<int:customer_id>')
 @customers_ns.param('customer_id', 'The ID of the customer')
 class Customer(Resource):
     @customers_ns.doc('get_customer')
