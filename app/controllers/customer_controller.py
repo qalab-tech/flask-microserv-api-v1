@@ -54,7 +54,8 @@ def token_required(f):
 # Correct the import statements and definitions as they are already done properly
 
 # Adjusted route paths
-@customers_ns.route('/')  # This will map to /api/v1/customers/
+# Route to get all customers
+@customers_ns.route('/')
 class CustomerList(Resource):
     @customers_ns.doc('get_customers')
     @customers_ns.response(200, 'Success')
@@ -63,7 +64,7 @@ class CustomerList(Resource):
     def get(self):
         """GET all customers"""
         customers = get_customers()
-        return jsonify(customers), 200
+        return customers, 200  # Return data directly
 
     @customers_ns.doc('create_customer')
     @customers_ns.expect(customer_model, validate=True)
@@ -73,11 +74,11 @@ class CustomerList(Resource):
         """POST create new customer"""
         data = request.json
         response, status = create_customer(data)
-        return jsonify(response), status
+        return response, status  # Return data directly
 
 
-# Adjusted specific customer route path
-@customers_ns.route('/<int:customer_id>')  # This maps to /api/v1/customers/<customer_id>
+# Route for operations on a specific customer by ID
+@customers_ns.route('/<int:customer_id>')
 @customers_ns.param('customer_id', 'The ID of the customer')
 class Customer(Resource):
     @customers_ns.doc('get_customer')
@@ -89,10 +90,10 @@ class Customer(Resource):
         customer = get_customer_by_id(customer_id)
         if customer:
             logger.info(f"Customer with id={customer_id} found, customer data: {customer}")
-            return jsonify(customer), 200
+            return customer, 200  # Return data directly
         else:
             logger.error(f"Customer with id={customer_id} not found in database")
-            abort(make_response(jsonify({'error': 'Customer not found'}), 404))
+            return {'error': 'Customer not found'}, 404  # Return as a dictionary
 
     @customers_ns.doc('update_customer')
     @customers_ns.expect(customer_model, validate=True)
@@ -102,7 +103,7 @@ class Customer(Resource):
         """PUT update customer"""
         data = request.json
         response, status = update_customer(customer_id, data)
-        return jsonify(response), status
+        return response, status  # Return data directly
 
     @customers_ns.doc('delete_customer')
     @customers_ns.response(200, 'Customer deleted successfully')
@@ -110,4 +111,4 @@ class Customer(Resource):
     def delete(self, customer_id):
         """DELETE customer by ID"""
         response, status = delete_customer(customer_id)
-        return jsonify(response), status
+        return response, status  # Return data directly
