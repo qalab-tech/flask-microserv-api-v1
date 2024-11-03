@@ -120,5 +120,8 @@ class Customer(Resource):
     @token_required
     def delete(self, customer_id):
         """DELETE customer by ID"""
+        customer = get_customer_by_id(customer_id)  # Псевдокод функции для поиска клиента
+        # if not customer:
+        #     return jsonify({'message': f'Customer with id {customer_id} not found'}), 404
         response, status = delete_customer(customer_id)
         return response, status  # Return data directly
