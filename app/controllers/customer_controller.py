@@ -84,7 +84,7 @@ class CustomerList(Resource):
         """POST create new customer"""
         data = request.json
         response, status = create_customer(data)
-        return jsonify(response, status)  # Return data directly
+        return response, status  # Return data directly
 
 
 # Route for operations on a specific customer by ID
@@ -100,7 +100,7 @@ class Customer(Resource):
         customer = get_customer_by_id(customer_id)
         if customer:
             logger.info(f"Customer with id={customer_id} found, customer data: {customer}")
-            return jsonify(customer, 200)  # Return data directly
+            return customer, 200  # Return data directly
         else:
             logger.error(f"Customer with id={customer_id} not found in database")
             return {'error': 'Customer not found'}, 404  # Return as a dictionary
@@ -117,6 +117,7 @@ class Customer(Resource):
 
     @customers_ns.doc('delete_customer')
     @customers_ns.response(200, 'Customer deleted successfully')
+    @customers_ns.response(404, 'Customer not found')
     @token_required
     def delete(self, customer_id):
         """DELETE customer by ID"""
