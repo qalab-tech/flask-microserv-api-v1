@@ -37,37 +37,53 @@ def fetch_customer(customer_id):
 def insert_customer(name, address):
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute(
-        "INSERT INTO customers (name, address) VALUES (%s, %s) RETURNING customer_id;",
-        (name, address)
-    )
-    customer_id = cursor.fetchone()[0]
-    connection.commit()
-    cursor.close()
-    release_db_connection(connection)
-    return customer_id
+    try:
+        cursor.execute(
+            "INSERT INTO customers (name, address) VALUES (%s, %s) RETURNING customer_id;",
+            (name, address)
+        )
+        customer_id = cursor.fetchone()[0]
+        if not customer_id:
+            return None
+        connection.commit()
+        return customer_id
+    except Exception as e:
+        logger.error(f"Database error: {e}")
+    finally:
+        cursor.close()
+        release_db_connection(connection)
 
 
 def update_customer_in_db(customer_id, name, address):
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute(
+    try:
+        cursor.execute(
         "UPDATE customers SET name = %s, address = %s WHERE customer_id = %s RETURNING customer_id;",
         (name, address, customer_id)
-    )
-    updated_customer_id = cursor.fetchone()
-    connection.commit()
-    cursor.close()
-    release_db_connection(connection)
-    return updated_customer_id
+        )
+        updated_customer_id = cursor.fetchone()
+        if not updated_customer_id:
+            return None
+        return updated_customer_id
+    except Exception as e:
+        logger.error(f"Database error: {e}")
+    finally:
+        cursor.close()
+        release_db_connection(connection)
 
 
 def delete_customer_in_db(customer_id):
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute("DELETE FROM customers WHERE customer_id = %s RETURNING customer_id;", (customer_id,))
-    deleted_customer_id = cursor.fetchone()
-    connection.commit()
-    cursor.close()
-    release_db_connection(connection)
-    return deleted_customer_id
+    try:
+        cursor.execute("DELETE FROM customers WHERE customer_id = %s RETURNING customer_id;", (customer_id,))
+        deleted_customer_id = cursor.fetchone()
+        if not deleted_customer_id:
+            return None
+        return deleted_customer_id
+    except Exception as e:
+        logger.error(f"Database error: {e}")
+    finally:
+        cursor.close()
+        release_db_connection(connection)

@@ -7,21 +7,21 @@ logger = setup_logger("customer_service")
 
 
 def get_customers():
+    """Get all customers"""
     customers = fetch_all_customers()
     customers_len = len(customers)
     if not customers:
         logger.info("No customers found")
-
     logger.info(f"{customers_len} customers found")
     return customers
 
 
 def get_customer_by_id(customer_id):
     customer = fetch_customer(customer_id)
-    if customer is None:
+    if not customer:
         logger.error(f"No such customer with id {customer_id}")
         abort(make_response(jsonify({'error': f'No such customer with id={customer_id}'}), 404))
-
+    logger.info(f"Customer with id={customer_id} found in database")
     return customer
 
 
@@ -43,20 +43,19 @@ def update_customer(customer_id, data):
         logger.error("Name and address are required")
         abort(make_response(jsonify({'error': 'Name and address are required'}), 400))
     updated_customer_id = update_customer_in_db(customer_id, name, address)
-    if updated_customer_id:
-        logger.info(f"Customer with id={customer_id}, name={name} and address={address} updated successfully")
-        return {"customer_id": customer_id, "name": name, "address": address}, 200
-    else:
+    if not updated_customer_id:
         logger.error(f"Customer with id={customer_id} not found")
         abort(make_response(jsonify({'error': f'Customer with id={customer_id} not found'}), 404))
+    logger.info(f"Customer with id={customer_id}, name={name} and address={address} updated successfully")
+    return {"customer_id": customer_id, "name": name, "address": address}, 200
 
 
 def delete_customer(customer_id):
     deleted_customer_id = delete_customer_in_db(customer_id)
-    if deleted_customer_id:
-        logger.info(f"Customer with id={customer_id} deleted successfully")
-        return jsonify({"message": "Customer deleted"}), 200
-    else:
+    if not deleted_customer_id:
         logger.error(f"Customer with id={customer_id} not found")
         abort(make_response(jsonify({'error': f'Customer with id={customer_id} not found'}), 404))
+    return jsonify({"message": "Customer deleted"}), 200
+
+
 
