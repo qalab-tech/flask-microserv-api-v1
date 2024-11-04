@@ -74,7 +74,7 @@ class CustomerList(Resource):
     def get(self):
         """GET all customers"""
         customers = get_customers()
-        return customers, 200  # Return data directly
+        return jsonify(customers, 200)  # Return data directly
 
     @customers_ns.doc('create_customer')
     @customers_ns.expect(customer_model, validate=True)
@@ -84,7 +84,7 @@ class CustomerList(Resource):
         """POST create new customer"""
         data = request.json
         response, status = create_customer(data)
-        return response, status  # Return data directly
+        return jsonify(response, status)  # Return data directly
 
 
 # Route for operations on a specific customer by ID
@@ -100,7 +100,7 @@ class Customer(Resource):
         customer = get_customer_by_id(customer_id)
         if customer:
             logger.info(f"Customer with id={customer_id} found, customer data: {customer}")
-            return customer, 200  # Return data directly
+            return jsonify(customer, 200)  # Return data directly
         else:
             logger.error(f"Customer with id={customer_id} not found in database")
             return {'error': 'Customer not found'}, 404  # Return as a dictionary
@@ -113,7 +113,7 @@ class Customer(Resource):
         """PUT update customer"""
         data = request.json
         response, status = update_customer(customer_id, data)
-        return response, status  # Return data directly
+        return jsonify(response, status)  # Return data directly
 
     @customers_ns.doc('delete_customer')
     @customers_ns.response(200, 'Customer deleted successfully')
@@ -121,4 +121,4 @@ class Customer(Resource):
     def delete(self, customer_id):
         """DELETE customer by ID"""
         response, status = delete_customer(customer_id)
-        return response, status  # Return data directly
+        return jsonify(response, status)  # Return data directly
