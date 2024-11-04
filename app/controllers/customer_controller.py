@@ -29,10 +29,6 @@ customer_model = customers_ns.model('Customer', {
 
 
 # Decorator for token validation
-from functools import wraps
-from flask import request, jsonify
-
-
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
