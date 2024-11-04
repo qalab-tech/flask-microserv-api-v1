@@ -59,8 +59,8 @@ def update_customer_in_db(customer_id, name, address):
     cursor = connection.cursor()
     try:
         cursor.execute(
-        "UPDATE customers SET name = %s, address = %s WHERE customer_id = %s RETURNING customer_id;",
-        (name, address, customer_id)
+            "UPDATE customers SET name = %s, address = %s WHERE customer_id = %s RETURNING customer_id;",
+            (name, address, customer_id)
         )
         updated_customer_id = cursor.fetchone()
         if not updated_customer_id:
