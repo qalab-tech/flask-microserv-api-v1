@@ -55,7 +55,7 @@ def delete_customer(customer_id):
     if not deleted_customer_id:
         logger.error(f"Customer with id={customer_id} not found")
         abort(make_response(jsonify({'error': f'Customer with id={customer_id} not found'}), 404))
-    return {"message": "Customer deleted"}, 200
+    return jsonify({"message": "Customer deleted"}), 200
 
 
 

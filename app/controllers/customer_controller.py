@@ -113,7 +113,7 @@ class Customer(Resource):
         """PUT update customer"""
         data = request.json
         response, status = update_customer(customer_id, data)
-        return jsonify(response, status)  # Return data directly
+        return response, status  # Return data directly
 
     @customers_ns.doc('delete_customer')
     @customers_ns.response(200, 'Customer deleted successfully')
@@ -121,4 +121,4 @@ class Customer(Resource):
     def delete(self, customer_id):
         """DELETE customer by ID"""
         response, status = delete_customer(customer_id)
-        return jsonify(response, status)  # Return data directly
+        return response, status  # Return data directly
