@@ -32,15 +32,17 @@ customer_model = customers_ns.model('Customer', {
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization')
+        auth_header = request.headers.get('Authorization')
 
-        if not token:
-            return jsonify({'message': 'Token is missing!'}), 403
+        if not auth_header:
+            return jsonify({'message': 'Token is missing!'}), 401
 
+        token_parts = auth_header.split(" ")
+        if len(token_parts) != 2 or token_parts[0] != 'Bearer':
+            return jsonify({'message': 'Token is invalid!'}), 401  # If token format is incorrect
+
+        token = token_parts[1]
         try:
-            # Remove "Bearer" prefix if exists
-            token = token.split()[1] if "Bearer" in token else token
-
             # Decoding a token with expiration check
             jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
 
