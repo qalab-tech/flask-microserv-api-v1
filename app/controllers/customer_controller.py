@@ -32,29 +32,18 @@ customer_model = customers_ns.model('Customer', {
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        auth_header = request.headers.get('Authorization')
-
-        # Проверяем наличие заголовка Authorization
-        if not auth_header:
-            return jsonify({'message': 'Token is missing!'}), 401
-
-        # Проверяем формат заголовка Authorization
-        token_parts = auth_header.split(" ")
-        if len(token_parts) != 2 or token_parts[0] != 'Bearer':
-            return jsonify({'message': 'Token is invalid!'}), 401  # Возвращаем ошибку, если токен не валиден
-
-        token = token_parts[1]
+        token = request.headers.get("Authorization")
+        if not token:
+            return jsonify({"message": "Token is missing!"}), 403
 
         try:
-            # Декодируем токен с проверкой на истечение срока
+            # Devide key for "Bearer" and key itself
+            token = token.split()[1] if "Bearer" in token else token
             jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-
         except jwt.ExpiredSignatureError:
-            # Токен истек
-            return jsonify({'message': 'Token is expired!'}), 401
+            return jsonify({"message": "Token has expired"}), 401
         except jwt.InvalidTokenError:
-            # Неверный токен
-            return jsonify({'message': 'Invalid token!'}), 403
+            return jsonify({"message": "Invalid token"}), 403
 
         return f(*args, **kwargs)
 
