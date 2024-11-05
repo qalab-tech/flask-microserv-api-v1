@@ -39,18 +39,19 @@ def token_required(f):
 
         token_parts = auth_header.split(" ")
         if len(token_parts) != 2 or token_parts[0] != 'Bearer':
-            return jsonify({'message': 'Token is invalid!'}), 401  # If token format is incorrect
+            return jsonify({'message': 'Token is invalid!'}), 401  # Если формат токена неправильный
 
         token = token_parts[1]
+
         try:
-            # Decoding a token with expiration check
+            # Декодируем токен с проверкой на истечение срока
             jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
 
         except jwt.ExpiredSignatureError:
-            # Token expired
+            # Токен истек
             return jsonify({'message': 'Token is expired!'}), 401
         except jwt.InvalidTokenError:
-            # Invalid token
+            # Неверный токен
             return jsonify({'message': 'Invalid token!'}), 403
 
         return f(*args, **kwargs)
