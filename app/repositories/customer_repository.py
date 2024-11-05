@@ -36,7 +36,7 @@ def fetch_customer(customer_id):
 
 def insert_customer(name, address):
     connection = get_db_connection()
-    cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor = connection.cursor()
     cursor.execute(
         "INSERT INTO customers (name, address) VALUES (%s, %s) RETURNING customer_id;",
         (name, address)
@@ -50,7 +50,7 @@ def insert_customer(name, address):
 
 def update_customer_in_db(customer_id, name, address):
     connection = get_db_connection()
-    cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor = connection.cursor()
     cursor.execute(
         "UPDATE customers SET name = %s, address = %s WHERE customer_id = %s RETURNING customer_id;",
         (name, address, customer_id)
@@ -64,7 +64,7 @@ def update_customer_in_db(customer_id, name, address):
 
 def delete_customer_in_db(customer_id):
     connection = get_db_connection()
-    cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor = connection.cursor()
     cursor.execute("DELETE FROM customers WHERE customer_id = %s RETURNING customer_id;", (customer_id,))
     deleted_customer_id = cursor.fetchone()
     connection.commit()
