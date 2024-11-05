@@ -87,3 +87,17 @@ def delete_customer_in_db(customer_id):
     finally:
         cursor.close()
         release_db_connection(connection)
+
+
+def check_customer_exists(customer_id):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute("SELECT * FROM customers WHERE customer_id = %s;", (customer_id,))
+        return cursor.fetchone() is not None
+    except Exception as e:
+        logger.error(f"Database error: {e}")
+        return False  # Возвращаем False в случае ошибки
+    finally:
+        cursor.close()
+        release_db_connection(connection)

@@ -1,5 +1,5 @@
 from app.repositories.customer_repository import fetch_all_customers, fetch_customer, insert_customer, \
-    update_customer_in_db, delete_customer_in_db
+    update_customer_in_db, delete_customer_in_db, check_customer_exists
 from app.logger_config import setup_logger
 from flask import abort, make_response, jsonify
 
@@ -56,8 +56,15 @@ def delete_customer(customer_id):
         logger.error(f"Customer with id={customer_id} not found")
         abort(make_response(jsonify({'error': f'Customer with id={customer_id} not found'}), 404))
 
+    # Проверка, действительно ли клиент был удален
+    check_customer = check_customer_exists(customer_id)
+    if check_customer:
+        logger.error(f"Customer with id={customer_id} still exists after deletion.")
+        return {"message": "Customer deletion failed"}, 500
+
     logger.info(f"Customer with id={customer_id} deleted successfully.")
     return {"message": "Customer deleted"}, 200
+
 
 
 
