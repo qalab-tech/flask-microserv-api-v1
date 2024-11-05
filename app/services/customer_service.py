@@ -56,7 +56,7 @@ def delete_customer(customer_id):
         logger.error(f"Customer with id={customer_id} not found")
         abort(make_response(jsonify({'error': f'Customer with id={customer_id} not found'}), 404))
 
-    # Проверка, действительно ли клиент был удален
+    # Check that customer has been deleted
     check_customer = check_customer_exists(customer_id)
     if check_customer:
         logger.error(f"Customer with id={customer_id} still exists after deletion.")

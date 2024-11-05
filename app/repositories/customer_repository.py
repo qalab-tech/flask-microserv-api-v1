@@ -65,6 +65,7 @@ def update_customer_in_db(customer_id, name, address):
         updated_customer_id = cursor.fetchone()
         if not updated_customer_id:
             return None
+        connection.commit()
         return updated_customer_id
     except Exception as e:
         logger.error(f"Database error: {e}")
@@ -81,6 +82,7 @@ def delete_customer_in_db(customer_id):
         deleted_customer_id = cursor.fetchone()
         if not deleted_customer_id:
             return None
+        connection.commit()
         return deleted_customer_id
     except Exception as e:
         logger.error(f"Database error: {e}")
