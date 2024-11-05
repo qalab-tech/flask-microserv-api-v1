@@ -34,12 +34,14 @@ def token_required(f):
     def decorated(*args, **kwargs):
         auth_header = request.headers.get('Authorization')
 
+        # Проверяем наличие заголовка Authorization
         if not auth_header:
             return jsonify({'message': 'Token is missing!'}), 401
 
+        # Проверяем формат заголовка Authorization
         token_parts = auth_header.split(" ")
         if len(token_parts) != 2 or token_parts[0] != 'Bearer':
-            return jsonify({'message': 'Token is invalid!'}), 401  # Если формат токена неправильный
+            return jsonify({'message': 'Token is invalid!'}), 401  # Возвращаем ошибку, если токен не валиден
 
         token = token_parts[1]
 
