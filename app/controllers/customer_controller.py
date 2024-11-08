@@ -106,7 +106,7 @@ class Customer(Resource):
         return response, status  # Return data directly
 
     @customers_ns.doc('patch_customer')
-    @customers_ns.expect(customer_model, validate=True)
+    @customers_ns.expect(customer_model)
     @customers_ns.response(200, 'Customer patched successfully')
     @token_required
     def patch(self, customer_id):
