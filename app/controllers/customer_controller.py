@@ -1,6 +1,5 @@
-from flask import abort, Blueprint, jsonify, request, make_response
-from app.services.customer_service import get_customers, get_customer_by_id, create_customer, update_customer, \
-    delete_customer
+from flask import abort, Blueprint, jsonify, request
+from app.services.customer_service import get_customers, get_customer_by_id, create_customer, update_customer, patch_customer, delete_customer
 from app.logger_config import setup_logger
 from flask_restx import Api, Resource, fields, Namespace
 from functools import wraps
@@ -112,7 +111,7 @@ class Customer(Resource):
     def patch(self, customer_id):
         """PATCH update customer"""
         data = request.json
-        response, status = update_customer(customer_id, data)
+        response, status = patch_customer(customer_id, data)
         return response, status  # Return data directly
 
     @customers_ns.doc('delete_customer')
