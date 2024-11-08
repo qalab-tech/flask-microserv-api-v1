@@ -62,6 +62,32 @@ def update_customer_in_db(customer_id, name, address):
     return updated_customer_id
 
 
+def patch_customer_in_db(customer_id, name=None, address=None):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    # Create query parts dynamically
+    fields_to_update = []
+    values = []
+    if name is not None:
+        fields_to_update.append("name = %s")
+        values.append(name)
+
+    if address is not None:
+        fields_to_update.append("address = %s")
+        values.append(address)
+    # Add customer_id to SQL query parameters
+    values.append(customer_id)
+    # Format SQL query
+    sql_query = f"UPDATE customers SET {', '.join(fields_to_update)} WHERE customer_id = %s RETURNING customer_id;"
+    # Execute query
+    cursor.execute(sql_query, tuple(values))
+    updated_customer_id = cursor.fetchone()
+    connection.commit()
+    cursor.close()
+    release_db_connection(connection)
+    return updated_customer_id
+
+
 def delete_customer_in_db(customer_id):
     connection = get_db_connection()
     cursor = connection.cursor()

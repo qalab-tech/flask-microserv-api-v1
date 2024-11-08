@@ -1,5 +1,5 @@
 from app.repositories.customer_repository import fetch_all_customers, fetch_customer, insert_customer, \
-    update_customer_in_db, delete_customer_in_db
+    update_customer_in_db, patch_customer_in_db, delete_customer_in_db
 from app.logger_config import setup_logger
 
 logger = setup_logger("customer_service")
@@ -47,6 +47,20 @@ def update_customer(customer_id, data):
         return {"error": "Customer not found"}, 404
 
 
+def patch_customer(customer_id, data):
+    name = data.get('name')
+    address = data.get('address')
+    if not name or not address:
+        return {"error": "Name or address are required"}, 400
+    patched_customer_id = patch_customer_in_db(customer_id, name, address)
+    if patched_customer_id:
+        logger.info(f"Customer with id={customer_id} patched successfully")
+        return {"customer_id": customer_id, "name": name, "address": address}, 200
+    else:
+        logger.error(f"Customer with id={customer_id} not found")
+        return {"error": "Customer not found"}, 404
+
+
 def delete_customer(customer_id):
     deleted_customer_id = delete_customer_in_db(customer_id)
     if deleted_customer_id:
@@ -55,7 +69,3 @@ def delete_customer(customer_id):
     else:
         logger.error(f"Customer with id={customer_id} not found")
         return {"error": "Customer not found"}, 404
-
-
-
-

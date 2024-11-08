@@ -105,6 +105,16 @@ class Customer(Resource):
         response, status = update_customer(customer_id, data)
         return response, status  # Return data directly
 
+    @customers_ns.doc('patch_customer')
+    @customers_ns.expect(customer_model, validate=True)
+    @customers_ns.response(200, 'Customer patched successfully')
+    @token_required
+    def patch(self, customer_id):
+        """PATCH update customer"""
+        data = request.json
+        response, status = update_customer(customer_id, data)
+        return response, status  # Return data directly
+
     @customers_ns.doc('delete_customer')
     @customers_ns.response(200, 'Customer deleted successfully')
     @customers_ns.response(404, 'Customer not found')
