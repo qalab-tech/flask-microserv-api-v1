@@ -50,8 +50,8 @@ def update_customer(customer_id, data):
 def patch_customer(customer_id, data):
     name = data.get('name')
     address = data.get('address')
-    if not name or not address:
-        return {"error": "Name or address are required"}, 400
+    if not name and not address:
+        return {"error": "At least one field (name or address) is required"}, 400
     patched_customer_id = patch_customer_in_db(customer_id, name, address)
     if patched_customer_id:
         logger.info(f"Customer with id={customer_id} patched successfully")
