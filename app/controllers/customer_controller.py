@@ -23,8 +23,8 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # Swagger model for a customer
 customer_model = customers_ns.model('Customer', {
-    'name': fields.String(required=True, description='Name of the customer'),
-    'address': fields.String(required=True, description='Address of the customer')
+    'name': fields.String(required=False, description='Name of the customer'),
+    'address': fields.String(required=False, description='Address of the customer')
 })
 
 

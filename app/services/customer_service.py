@@ -48,6 +48,7 @@ def update_customer(customer_id, data):
 
 
 def patch_customer(customer_id, data):
+    logger.info(f"Entering patch_customer with customer_id={customer_id} and data={data}")
     name = data.get('name')
     address = data.get('address')
     if not name and not address:
