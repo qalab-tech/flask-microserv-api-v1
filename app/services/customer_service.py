@@ -48,15 +48,19 @@ def update_customer(customer_id, data):
 
 
 def patch_customer(customer_id, data):
-    logger.info(f"Entering patch_customer with customer_id={customer_id} and data={data}")
     name = data.get('name')
     address = data.get('address')
-    if not name and not address:
+    if name is None and address is None:
         return {"error": "At least one field (name or address) is required"}, 400
-    patched_customer_id = patch_customer_in_db(customer_id, name, address)
+    patched_customer_id = patch_customer_in_db(customer_id, name=name, address=address)
     if patched_customer_id:
         logger.info(f"Customer with id={customer_id} patched successfully")
-        return {"customer_id": customer_id, "name": name, "address": address}, 200
+        response_data = {"customer_id": customer_id}
+        if name is not None:
+            response_data["name"] = name
+        if address is not None:
+            response_data["address"] = address
+        return response_data, 200
     else:
         logger.error(f"Customer with id={customer_id} not found")
         return {"error": "Customer not found"}, 404
