@@ -10,7 +10,7 @@ services:
       - SECRET_KEY
       - TZ=Europe/Moscow
     ports:
-      - "5001:5001"
+      - "0.0.0.0:5001:5001"
     depends_on:
       - db
     restart: always
@@ -34,7 +34,7 @@ services:
       - SECRET_KEY=hudTTPZbw6WV4yxEUnVdT5CooIT1TepeD0-Nwlw_-D4
       - TZ=Europe/Moscow
     ports:
-      - "5000:5000"
+      - "0.0.0.0:5000:5000"
     depends_on:
       - db
     restart: always
