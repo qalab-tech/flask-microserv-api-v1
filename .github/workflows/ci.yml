@@ -40,10 +40,10 @@ jobs:
             sleep 10
 
             # Run tests inside web docker container
-            echo "Running tests inside the Flask Auth Service container..."
-            docker compose -f docker-compose.yml exec auth_service pytest tests --verbose --disable-warnings || (echo "Tests auth failed!" && exit 1)
+            echo "Running tests inside the Flask Auth Service container and REST API container..."
+            docker compose -f docker-compose.yml exec auth_service pytest tests --verbose --disable-warnings && docker compose -f docker-compose.yml exec web pytest tests --verbose --disable-warnings  || (echo "Tests auth failed!" && exit 1)
             echo "Running tests inside the Flask application container..."
-            docker compose -f docker-compose.yml exec web pytest tests --verbose --disable-warnings || (echo "Tests web failed!" && exit 1)
+            || (echo "Tests failed!" && exit 1)
             
             echo "Deployment and testing completed on Raspberry Pi 3B."
           EOF
