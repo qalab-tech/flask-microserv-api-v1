@@ -10,5 +10,4 @@ pytest
 requests
 pytest-xdist
 pytest-html
-allure-pytest
-psycopg2-binary
+psycopg2
