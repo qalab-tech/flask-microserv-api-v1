@@ -44,6 +44,8 @@ def test_options_customers(auth_token):
     headers = {"Authorization": auth_token}
     response = requests.options(BASE_URL, headers=headers)
     actual_methods = response.headers['Allow']  # Convert both strings to sets and compare
+    assert response.status_code == 200
+    assert response.headers['Content-Type'] == 'text/html; charset=utf-8'
     assert set(actual_methods.split(', ')) == set(expected_methods.split(', ')), f"Expected: {expected_methods}, but got: {actual_methods}"
 
 
@@ -66,6 +68,7 @@ def test_head(auth_token):
     headers = {"Authorization": auth_token}
     response = requests.options(BASE_URL, headers=headers)
     assert response.status_code == 200
+    assert response.headers['Content-Type'] == 'text/html; charset=utf-8'
 
 
 def test_create_customer(new_customer_data, auth_token):
@@ -73,6 +76,7 @@ def test_create_customer(new_customer_data, auth_token):
     headers = {"Authorization": auth_token}
     response = requests.post(BASE_URL, json=new_customer_data, headers=headers)
     assert response.status_code == 201
+    assert response.headers['Content-Type'] == 'application/json'
     customer = response.json()
     assert "customer_id" in customer
     assert customer["name"] == new_customer_data["name"]
@@ -86,6 +90,7 @@ def test_get_all_customers(auth_token):
     headers = {"Authorization": auth_token}
     response = requests.get(BASE_URL, headers=headers)
     assert response.status_code == 200
+    assert response.headers['Content-Type'] == 'application/json'
     assert isinstance(response.json(), list)
 
 
@@ -96,6 +101,7 @@ def test_get_customer(new_customer, auth_token):
     response = requests.get(f"{BASE_URL}/{customer_id}", headers=headers)
     customer = response.json()
     assert response.status_code == 200
+    assert response.headers['Content-Type'] == 'application/json'
     assert isinstance(customer, dict)
 
 
@@ -109,6 +115,7 @@ def test_update_customer(new_customer, new_customer_data, auth_token):
     }
     response = requests.put(f"{BASE_URL}/{customer_id}", json=updated_data, headers=headers)
     assert response.status_code == 200
+    assert response.headers['Content-Type'] == 'application/json'
     updated_customer = response.json()
     assert updated_customer["name"] == updated_data["name"]
     assert updated_customer["address"] == updated_data["address"]
@@ -130,6 +137,7 @@ def test_patch_customer_parametrized(new_customer, auth_token, update_data, fiel
     headers = {"Authorization": auth_token}
     response = requests.patch(f"{BASE_URL}/{customer_id}", json=update_data, headers=headers)
     assert response.status_code == 200
+    assert response.headers['Content-Type'] == 'application/json'
     updated_customer = response.json()
     assert updated_customer[field] == new_value
     # Check that other fields remain unchanged
@@ -153,6 +161,7 @@ def test_delete_customer(new_customer, auth_token):
     headers = {"Authorization": auth_token}
     response = requests.delete(f"{BASE_URL}/{customer_id}", headers=headers)
     assert response.status_code == 200
+    assert response.headers['Content-Type'] == 'application/json'
     # Check that customer is deleted
     response = requests.get(f"{BASE_URL}/{customer_id}", headers=headers)
     assert response.status_code == 404
