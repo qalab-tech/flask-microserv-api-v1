@@ -49,7 +49,7 @@ def test_options_customers(auth_token):
 
 def test_options_customer(auth_token, new_customer_data):
     """Test OPTIONS customer endpoint"""
-    expected_methods = 'OPTIONS, GET, POST, HEAD, PATCH'
+    expected_methods = 'PATCH, PUT, DELETE, GET, OPTIONS, HEAD'
     headers = {"Authorization": auth_token}
     response = requests.post(BASE_URL, json=new_customer_data, headers=headers)
     customer = response.json()
