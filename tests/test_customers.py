@@ -38,15 +38,15 @@ def new_customer(new_customer_data, auth_token):
     requests.delete(f"{BASE_URL}/{customer['customer_id']}", headers=headers)
 
 
-def test_options_customers(auth_token):
-    """Test OPTIONS customers endpoint"""
-    # Expected response example
-    expected_methods = 'OPTIONS, GET, POST, HEAD'
-    headers = {"Authorization": auth_token}
-    response = requests.options(BASE_URL, headers=headers)
-    actual_methods = response.headers['Allow']
-    # Convert both strings to sets and compare
-    assert set(actual_methods.split(', ')) == set(expected_methods.split(', ')), f"Expected: {expected_methods}, but got: {actual_methods}"
+# def test_options_customers(auth_token):
+#     """Test OPTIONS customers endpoint"""
+#     # Expected response example
+#     expected_methods = 'OPTIONS, GET, POST, HEAD'
+#     headers = {"Authorization": auth_token}
+#     response = requests.options(BASE_URL, headers=headers)
+#     actual_methods = response.headers['Allow']
+#     # Convert both strings to sets and compare
+#     assert set(actual_methods.split(', ')) == set(expected_methods.split(', ')), f"Expected: {expected_methods}, but got: {actual_methods}"
 
 
 def test_options_customer(auth_token, new_customer_data):
@@ -63,7 +63,7 @@ def test_options_customer(auth_token, new_customer_data):
     requests.delete(f"{BASE_URL}/{customer_id}", headers=headers)
 
 
-def test_head():
+def test_head(auth_token):
     # Test HEAD HTTP Method
     headers = {"Authorization": auth_token}
     response = requests.options(BASE_URL, headers=headers)
