@@ -38,27 +38,25 @@ def new_customer(new_customer_data, auth_token):
     requests.delete(f"{BASE_URL}/{customer['customer_id']}", headers=headers)
 
 
-# def test_options_customers(auth_token):
-#     """Test OPTIONS customers endpoint"""
-#     # Expected response example
-#     expected_methods = 'OPTIONS, GET, POST, HEAD'
-#     headers = {"Authorization": auth_token}
-#     response = requests.options(BASE_URL, headers=headers)
-#     actual_methods = response.headers['Allow']
-#     # Convert both strings to sets and compare
-#     assert set(actual_methods.split(', ')) == set(expected_methods.split(', ')), f"Expected: {expected_methods}, but got: {actual_methods}"
+def test_options_customers(auth_token):
+    """Test OPTIONS customers endpoint"""  # Expected response example
+    expected_methods = 'OPTIONS, GET, POST, HEAD'
+    headers = {"Authorization": auth_token}
+    response = requests.options(BASE_URL, headers=headers)
+    actual_methods = response.headers['Allow']  # Convert both strings to sets and compare
+    assert set(actual_methods.split(', ')) == set(expected_methods.split(', ')), f"Expected: {expected_methods}, but got: {actual_methods}"
 
 
 def test_options_customer(auth_token, new_customer_data):
     """Test OPTIONS customer endpoint"""
     expected_methods = 'OPTIONS, GET, POST, HEAD, PATCH'
     headers = {"Authorization": auth_token}
-    customer = requests.post(BASE_URL, json=new_customer_data, headers=headers)
+    response = requests.post(BASE_URL, json=new_customer_data, headers=headers)
+    customer = response.json()
     customer_id = customer['customer_id']
     response = requests.options(f"{BASE_URL}/{customer_id}", headers=headers)
     actual_methods = response.headers['Allow']
-    assert set(actual_methods.split(', ')) == set(
-        expected_methods.split(', ')), f"Expected: {expected_methods}, but got: {actual_methods}"
+    assert set(actual_methods.split(', ')) == set(expected_methods.split(', ')), f"Expected: {expected_methods}, but got: {actual_methods}"
     # Delete new created customer
     requests.delete(f"{BASE_URL}/{customer_id}", headers=headers)
 
