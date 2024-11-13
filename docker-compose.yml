@@ -66,7 +66,19 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-
+  # Redis Service
+  redis:
+    image: redis:7.0
+    ports:
+      - "3600:6379"  # Открываем порт 3600 для внешнего доступа
+    restart: always
+    networks:
+      - backend_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 volumes:
   postgres_data:
 

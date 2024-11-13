@@ -5,7 +5,7 @@ from app.logger_config import setup_logger
 
 logger = setup_logger("db_connection")
 
-DATABASE_URL = os.getenv("CUSTOMERS_DATABASE_URL")
+DATABASE_URL = os.getenv("CUSTOMERS_DATABASE_URL", "postgresql://customer_db_user:Gl00m15@192.168.88.18/customer_service_db")
 
 
 # Init Pool

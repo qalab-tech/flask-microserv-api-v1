@@ -2,9 +2,9 @@ gunicorn
 faker
 flask
 flask_restx
-locust
 pyyaml
 pyjwt
+python-dotenv
 flask-sqlalchemy
 pytest
 requests
