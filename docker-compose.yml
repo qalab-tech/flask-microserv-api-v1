@@ -70,7 +70,7 @@ services:
   redis:
     image: redis:7.0
     environment:
-      TZ=Europe/Moscow
+      - TZ=Europe/Moscow
     ports:
       - "3600:6379"  # Open port 3600 for external access
     restart: always
