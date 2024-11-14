@@ -2,11 +2,12 @@ import psycopg2
 from psycopg2 import pool
 import os
 from app.logger_config import setup_logger
+from app.performance_monitor import log_duration
 
 logger = setup_logger("db_connection")
 
-DATABASE_URL = os.getenv("CUSTOMERS_DATABASE_URL", "postgresql://customer_db_user:Gl00m15@192.168.88.18/customer_service_db")
-
+DATABASE_URL = os.getenv("CUSTOMERS_DATABASE_URL",
+                         "postgresql://customer_db_user:Gl00m15@192.168.88.18/customer_service_db")
 
 # Init Pool
 try:
@@ -18,6 +19,7 @@ except Exception as e:
     raise
 
 
+@log_duration
 def get_db_connection():
     """Get connection from pool"""
     try:
@@ -30,6 +32,7 @@ def get_db_connection():
         raise
 
 
+@log_duration
 def release_db_connection(connection):
     """Return connection to pool"""
     try:
@@ -40,6 +43,7 @@ def release_db_connection(connection):
         logger.error(f"Error releasing connection: {str(e)}")
 
 
+@log_duration
 def close_all_connections():
     """Close all connections from pool"""
     try:
@@ -48,6 +52,3 @@ def close_all_connections():
             logger.info("All connections in the pool closed")
     except Exception as e:
         logger.error(f"Error closing all connections: {str(e)}")
-
-
-

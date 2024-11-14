@@ -1,10 +1,12 @@
 from app.db import get_db_connection, release_db_connection
 from app.logger_config import setup_logger
 import psycopg2.extras
+from app.performance_monitor import log_duration
 
 logger = setup_logger("customer_repository")
 
 
+@log_duration
 def fetch_all_customers():
     connection = get_db_connection()
     cursor = connection.cursor(
@@ -16,6 +18,7 @@ def fetch_all_customers():
     return customers
 
 
+@log_duration
 def fetch_customer(customer_id):
     connection = get_db_connection()
     cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -34,6 +37,7 @@ def fetch_customer(customer_id):
         release_db_connection(connection)
 
 
+@log_duration
 def insert_customer(name, address):
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -48,6 +52,7 @@ def insert_customer(name, address):
     return customer_id
 
 
+@log_duration
 def update_customer_in_db(customer_id, name, address):
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -62,6 +67,7 @@ def update_customer_in_db(customer_id, name, address):
     return updated_customer_id
 
 
+@log_duration
 def patch_customer_in_db(customer_id, name=None, address=None):
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -88,6 +94,7 @@ def patch_customer_in_db(customer_id, name=None, address=None):
     return updated_customer_id
 
 
+@log_duration
 def delete_customer_in_db(customer_id):
     connection = get_db_connection()
     cursor = connection.cursor()

@@ -1,6 +1,7 @@
 from flask import abort, Blueprint, jsonify, request
 from app.services.customer_service import get_customers, get_customer_by_id, create_customer, update_customer, patch_customer, delete_customer
 from app.logger_config import setup_logger
+from app.performance_monitor import log_duration
 from flask_restx import Api, Resource, fields, Namespace
 from functools import wraps
 import jwt
@@ -59,6 +60,7 @@ class CustomerList(Resource):
     @customers_ns.doc('get_customers')
     @customers_ns.response(200, 'Success')
     @customers_ns.response(403, 'Token is missing!')
+    @log_duration
     @token_required
     def get(self):
         """GET all customers"""
@@ -68,6 +70,7 @@ class CustomerList(Resource):
     @customers_ns.doc('create_customer')
     @customers_ns.expect(customer_model, validate=True)
     @customers_ns.response(201, 'Customer created successfully')
+    @log_duration
     @token_required
     def post(self):
         """POST create new customer"""
@@ -83,6 +86,7 @@ class Customer(Resource):
     @customers_ns.doc('get_customer')
     @customers_ns.response(200, 'Success')
     @customers_ns.response(404, 'Customer not found')
+    @log_duration
     @token_required
     def get(self, customer_id):
         """GET customer by ID"""
@@ -97,6 +101,7 @@ class Customer(Resource):
     @customers_ns.doc('update_customer')
     @customers_ns.expect(customer_model, validate=True)
     @customers_ns.response(200, 'Customer updated successfully')
+    @log_duration
     @token_required
     def put(self, customer_id):
         """PUT update customer"""
@@ -107,6 +112,7 @@ class Customer(Resource):
     @customers_ns.doc('patch_customer', validate=False)
     @customers_ns.expect(customer_model)
     @customers_ns.response(200, 'Customer patched successfully')
+    @log_duration
     @token_required
     def patch(self, customer_id):
         """PATCH update customer"""
@@ -117,6 +123,7 @@ class Customer(Resource):
     @customers_ns.doc('delete_customer')
     @customers_ns.response(200, 'Customer deleted successfully')
     @customers_ns.response(404, 'Customer not found')
+    @log_duration
     @token_required
     def delete(self, customer_id):
         """DELETE customer by ID"""
