@@ -69,8 +69,10 @@ services:
   # Redis Service
   redis:
     image: redis:7.0
+    environment:
+      TZ=Europe/Moscow
     ports:
-      - "3600:6379"  # Открываем порт 3600 для внешнего доступа
+      - "3600:6379"  # Open port 3600 for external access
     restart: always
     networks:
       - backend_network
