@@ -81,6 +81,26 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+# Nginx Proxy Service
+  nginx:
+    image: nginx:latest
+    environment:
+      - TZ=Europe/Moscow
+    ports:
+      - "80:80"  # Nginx listens on port 80 for HTTP traffic
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro  # Map custom Nginx config
+    depends_on:
+      - auth_service
+      - web
+    networks:
+      - backend_network
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 volumes:
   postgres_data:
 
