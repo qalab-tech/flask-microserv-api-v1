@@ -6,13 +6,13 @@ import os
 fake = Faker()
 
 # Flask microservice Base URL
-BASE_URL = os.getenv("CUSTOMERS_BASE_URL", "http://192.168.88.18:5000/api/v1/customers")
+BASE_URL = os.getenv("CUSTOMERS_BASE_URL", "http://blue-sky4all.duckdns.org/api/v1/customers")
 
 
 @pytest.fixture(scope="session")
 def auth_token():
     """Get auth token"""
-    url = "http://192.168.88.18:5001/auth/login"  # authorization URL
+    url = "http://blue-sky4all.duckdns.org/auth/login"  # authorization URL
     credentials = {"username": "test", "password": "test"}
     response = requests.post(url, json=credentials)
     response.raise_for_status()
@@ -46,7 +46,8 @@ def test_options_customers(auth_token):
     actual_methods = response.headers['Allow']  # Convert both strings to sets and compare
     assert response.status_code == 200
     assert response.headers['Content-Type'] == 'text/html; charset=utf-8'
-    assert set(actual_methods.split(', ')) == set(expected_methods.split(', ')), f"Expected: {expected_methods}, but got: {actual_methods}"
+    assert set(actual_methods.split(', ')) == set(
+        expected_methods.split(', ')), f"Expected: {expected_methods}, but got: {actual_methods}"
 
 
 def test_options_customer(auth_token, new_customer_data):
@@ -58,7 +59,8 @@ def test_options_customer(auth_token, new_customer_data):
     customer_id = customer['customer_id']
     response = requests.options(f"{BASE_URL}/{customer_id}", headers=headers)
     actual_methods = response.headers['Allow']
-    assert set(actual_methods.split(', ')) == set(expected_methods.split(', ')), f"Expected: {expected_methods}, but got: {actual_methods}"
+    assert set(actual_methods.split(', ')) == set(
+        expected_methods.split(', ')), f"Expected: {expected_methods}, but got: {actual_methods}"
     # Delete new created customer
     requests.delete(f"{BASE_URL}/{customer_id}", headers=headers)
 
@@ -128,8 +130,8 @@ def test_update_customer(new_customer, new_customer_data, auth_token):
 
 
 @pytest.mark.parametrize("update_data, field, new_value", [
-    ({"name": "Updated Name"}, "name", "Updated Name"),  # Тест-кейс: обновление имени
-    ({"address": "New Address 123"}, "address", "New Address 123")  # Тест-кейс: обновление адреса
+    ({"name": "Updated Name"}, "name", "Updated Name"),  # TestCase: patch name
+    ({"address": "New Address 123"}, "address", "New Address 123")  # TestCase: patch address
 ])
 def test_patch_customer_parametrized(new_customer, auth_token, update_data, field, new_value):
     """Test PATCH customer with parameterized cases for updating name or address"""
@@ -140,19 +142,10 @@ def test_patch_customer_parametrized(new_customer, auth_token, update_data, fiel
     assert response.headers['Content-Type'] == 'application/json'
     updated_customer = response.json()
     assert updated_customer[field] == new_value
-    # Check that other fields remain unchanged
-    # for key, value in new_customer.items():
-    #     if key != field:
-    #         assert updated_customer[key] == value
-    # Additional verification: we receive customer data and check for updates
     response = requests.get(f"{BASE_URL}/{customer_id}", headers=headers)
-    assert response.status_code == 200
     customer = response.json()
+    assert response.status_code == 200
     assert type(customer) == dict
-    # assert customer[field] == new_value
-    # for key, value in new_customer.items():
-    #     if key != field:
-    #         assert customer[key] == value
 
 
 def test_delete_customer(new_customer, auth_token):
