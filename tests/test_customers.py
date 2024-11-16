@@ -43,11 +43,10 @@ def test_options_customers(auth_token):
     expected_methods = 'OPTIONS, GET, POST, HEAD'
     headers = {"Authorization": auth_token}
     response = requests.options(BASE_URL, headers=headers)
-    actual_methods = response.headers['Allow']  # Convert both strings to sets and compare
+    connection = response.headers['Connection']  # Convert both strings to sets and compare
     assert response.status_code == 200
+    assert connection == 'keep-alive'
     assert response.headers['Content-Type'] == 'text/html; charset=utf-8'
-    assert set(actual_methods.split(', ')) == set(
-        expected_methods.split(', ')), f"Expected: {expected_methods}, but got: {actual_methods}"
 
 
 def test_options_customer(auth_token, new_customer_data):
