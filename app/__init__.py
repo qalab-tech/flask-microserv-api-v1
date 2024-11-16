@@ -4,6 +4,7 @@ from app.controllers.customer_controller import customers_bp
 
 def create_app():
     app = Flask(__name__)
+    app.url_map.strict_slashes = False
 
     # Register BluePrint
     app.register_blueprint(customers_bp, url_prefix='/api/v1')
