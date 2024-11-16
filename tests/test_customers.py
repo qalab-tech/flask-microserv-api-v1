@@ -6,13 +6,13 @@ import os
 fake = Faker()
 
 # Flask microservice Base URL
-BASE_URL = os.getenv("CUSTOMERS_BASE_URL", "http://blue-sky4all.duckdns.org/api/v1/customers")
+BASE_URL = os.getenv("CUSTOMERS_BASE_URL", "https://blue-sky4all.duckdns.org/api/v1/customers")
 
 
 @pytest.fixture(scope="session")
 def auth_token():
     """Get auth token"""
-    url = "http://blue-sky4all.duckdns.org/auth/login"  # authorization URL
+    url = "https://blue-sky4all.duckdns.org/auth/login"  # authorization URL
     credentials = {"username": "test", "password": "test"}
     response = requests.post(url, json=credentials)
     response.raise_for_status()
