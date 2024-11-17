@@ -1,7 +1,9 @@
-from flask import abort, Blueprint, jsonify, request
-from app.services.customer_service import get_customers, get_customer_by_id, create_customer, update_customer, patch_customer, delete_customer
+from flask import abort, Blueprint, request, make_response
+from app.services.customer_service import get_customers, get_customer_by_id, create_customer, update_customer, \
+    patch_customer, delete_customer
 from app.logger_config import setup_logger
 from app.performance_monitor import log_duration
+from app.redis_cache import redis_cache
 from flask_restx import Api, Resource, fields, Namespace
 from functools import wraps
 import jwt
@@ -52,8 +54,6 @@ def token_required(f):
 
 # Route to get all customers
 # Correct the import statements and definitions as they are already done properly
-
-# Adjusted route paths
 # Route to get all customers
 @customers_ns.route('/')
 class CustomerList(Resource):
@@ -62,10 +62,11 @@ class CustomerList(Resource):
     @customers_ns.response(403, 'Token is missing!')
     @log_duration
     @token_required
+    @redis_cache(redis_key="customers:all", ttl=3600)
     def get(self):
         """GET all customers"""
         customers = get_customers()
-        return jsonify(customers, 200)  # Return data directly
+        return make_response(customers, 200)
 
     @customers_ns.doc('create_customer')
     @customers_ns.expect(customer_model, validate=True)
