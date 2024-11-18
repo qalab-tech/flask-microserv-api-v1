@@ -10,7 +10,7 @@ logger = setup_logger("Redis Cache")
 
 # Radis connection string (we can use a password to improve security
 
-cache = redis.Redis(host='127.0.0.1', port=6379, decode_responses=True)
+cache = redis.Redis(host='redis', port=6379, decode_responses=True)
 
 
 @log_duration
