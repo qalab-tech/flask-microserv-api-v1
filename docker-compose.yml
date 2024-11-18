@@ -30,7 +30,8 @@ services:
     image: customer-api-v1
     environment:
       - CUSTOMERS_BASE_URL=http://localhost:5000/api/v1/customers
-      - CUSTOMERS_DATABASE_URL
+      - AUTH_BASE_URL=http://auth_service:5001
+      - CUSTOMERS_DATABASE_URL=postgresql://customer_db_user:Gl00m15@db/customer_service_db
       - SECRET_KEY=hudTTPZbw6WV4yxEUnVdT5CooIT1TepeD0-Nwlw_-D4
       - TZ=Europe/Moscow
     ports:

@@ -6,15 +6,15 @@ import os
 fake = Faker()
 
 # Flask microservice Base URL
-# BASE_URL = os.getenv("CUSTOMERS_BASE_URL")
 
-BASE_URL = 'http://web:5000/api/v1/customers'
+BASE_URL = os.getenv("CUSTOMERS_BASE_URL")
+AUTH_BASE_URL = os.getenv("AUTH_BASE_URL")
 
 
 @pytest.fixture(scope="session")
 def auth_token():
     """Get auth token"""
-    url = "http://auth_service:5001/auth/login"  # authorization URL
+    url = f"{AUTH_BASE_URL}/auth/login"  # authorization URL
     credentials = {"username": "test", "password": "test"}
     response = requests.post(url, json=credentials)
     response.raise_for_status()

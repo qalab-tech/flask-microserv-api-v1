@@ -6,8 +6,7 @@ from app.performance_monitor import log_duration
 
 logger = setup_logger("db_connection")
 
-DATABASE_URL = os.getenv("CUSTOMERS_DATABASE_URL",
-                         "postgresql://customer_db_user:Gl00m15@192.168.88.18/customer_service_db")
+DATABASE_URL = os.getenv("CUSTOMERS_DATABASE_URL")
 
 # Init Pool
 try:
