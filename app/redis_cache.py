@@ -1,4 +1,5 @@
 # Redis cache
+import os
 import json
 from functools import wraps
 from flask import Response, request, jsonify
@@ -10,7 +11,10 @@ logger = setup_logger("Redis Cache")
 
 # Radis connection string (we can use a password to improve security
 
-cache = redis.Redis(host='redis', port=6379, decode_responses=True)
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = os.getenv("REDIS_PORT")
+
+cache = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
 
 
 @log_duration
@@ -20,6 +24,7 @@ def redis_cache(redis_key: str, ttl: int = 3600):
     :param redis_key: key for Redis cache.
     :param ttl: time to live (in seconds). by default 3600 seconds (1 hour).
     """
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
