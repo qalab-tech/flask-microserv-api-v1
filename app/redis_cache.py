@@ -6,6 +6,9 @@ from flask import Response, request, jsonify
 import redis
 from app.logger_config import setup_logger
 from app.performance_monitor import log_duration
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logger = setup_logger("Redis Cache")
 

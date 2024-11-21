@@ -2,7 +2,9 @@ import requests
 import pytest
 from faker.proxy import Faker
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 fake = Faker()
 
 # Flask microservice Base URL

@@ -3,6 +3,9 @@ from psycopg2 import pool
 import os
 from app.logger_config import setup_logger
 from app.performance_monitor import log_duration
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logger = setup_logger("db_connection")
 
