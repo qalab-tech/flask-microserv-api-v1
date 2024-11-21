@@ -1,9 +1,11 @@
 import requests
+import functools
 
 
 def handle_requests_exceptions(func):
     """Requests Exceptions handle decorator"""
 
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
