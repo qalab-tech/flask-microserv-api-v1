@@ -15,7 +15,6 @@ AUTH_BASE_URL = os.getenv("AUTH_BASE_URL")
 
 
 @pytest.fixture(scope="session")
-@handle_requests_exceptions
 def auth_token():
     """Get auth token"""
     url = f"{AUTH_BASE_URL}/auth/login"  # authorization URL
@@ -33,7 +32,6 @@ def new_customer_data():
 
 
 @pytest.fixture
-@handle_requests_exceptions
 def new_customer(new_customer_data, auth_token):
     """Create a new customer in the database and delete after the test"""
     headers = {"Authorization": auth_token}
