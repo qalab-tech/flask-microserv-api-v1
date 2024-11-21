@@ -1,7 +1,7 @@
 import requests
 import pytest
 from faker.proxy import Faker
-from utils.decorators import handle_requests_exceptions
+from tests.utils.decorators import handle_requests_exceptions
 import os
 from dotenv import load_dotenv
 
