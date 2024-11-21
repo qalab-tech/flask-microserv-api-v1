@@ -12,7 +12,7 @@ load_dotenv()
 
 logger = setup_logger("Redis Cache")
 
-# Radis connection string (we can use a password to improve security
+# Radis connection string (we can use a password to improve security)
 
 REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = os.getenv("REDIS_PORT")

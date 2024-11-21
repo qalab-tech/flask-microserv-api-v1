@@ -1,6 +1,7 @@
 import requests
 import pytest
 from faker.proxy import Faker
+from utils.decorators import handle_requests_exceptions
 import os
 from dotenv import load_dotenv
 
@@ -14,6 +15,7 @@ AUTH_BASE_URL = os.getenv("AUTH_BASE_URL")
 
 
 @pytest.fixture(scope="session")
+@handle_requests_exceptions
 def auth_token():
     """Get auth token"""
     url = f"{AUTH_BASE_URL}/auth/login"  # authorization URL
@@ -31,6 +33,7 @@ def new_customer_data():
 
 
 @pytest.fixture
+@handle_requests_exceptions
 def new_customer(new_customer_data, auth_token):
     """Create a new customer in the database and delete after the test"""
     headers = {"Authorization": auth_token}
@@ -42,6 +45,7 @@ def new_customer(new_customer_data, auth_token):
     requests.delete(f"{BASE_URL}/{customer['customer_id']}", headers=headers)
 
 
+@handle_requests_exceptions
 def test_options_customers(auth_token):
     """Test OPTIONS customers endpoint"""  # Expected response example
     expected_methods = 'OPTIONS, GET, POST, HEAD'
@@ -53,6 +57,7 @@ def test_options_customers(auth_token):
     assert response.headers['Content-Type'] == 'text/html; charset=utf-8'
 
 
+@handle_requests_exceptions
 def test_options_customer(auth_token, new_customer_data):
     """Test OPTIONS customer endpoint"""
     expected_methods = 'PATCH, PUT, DELETE, GET, OPTIONS, HEAD'
@@ -68,6 +73,7 @@ def test_options_customer(auth_token, new_customer_data):
     requests.delete(f"{BASE_URL}/{customer_id}", headers=headers)
 
 
+@handle_requests_exceptions
 def test_head(auth_token):
     # Test HEAD HTTP Method
     headers = {"Authorization": auth_token}
@@ -76,6 +82,7 @@ def test_head(auth_token):
     assert response.headers['Content-Type'] == 'text/html; charset=utf-8'
 
 
+@handle_requests_exceptions
 def test_create_customer(new_customer_data, auth_token):
     """Test create new customer"""
     headers = {"Authorization": auth_token}
@@ -90,6 +97,7 @@ def test_create_customer(new_customer_data, auth_token):
     requests.delete(f"{BASE_URL}/{customer['customer_id']}", headers=headers)
 
 
+@handle_requests_exceptions
 def test_get_all_customers(auth_token):
     """Test all customers"""
     headers = {"Authorization": auth_token}
@@ -99,6 +107,7 @@ def test_get_all_customers(auth_token):
     assert isinstance(response.json(), list)
 
 
+@handle_requests_exceptions
 def test_get_customer(new_customer, auth_token):
     """Test get customer by id"""
     customer_id = new_customer["customer_id"]
@@ -110,6 +119,7 @@ def test_get_customer(new_customer, auth_token):
     assert isinstance(customer, dict)
 
 
+@handle_requests_exceptions
 def test_update_customer(new_customer, new_customer_data, auth_token):
     """Test UPDATE customer"""
     customer_id = new_customer["customer_id"]
@@ -136,6 +146,7 @@ def test_update_customer(new_customer, new_customer_data, auth_token):
     ({"name": "Updated Name"}, "name", "Updated Name"),  # TestCase: patch name
     ({"address": "New Address 123"}, "address", "New Address 123")  # TestCase: patch address
 ])
+@handle_requests_exceptions
 def test_patch_customer_parametrized(new_customer, auth_token, update_data, field, new_value):
     """Test PATCH customer with parameterized cases for updating name or address"""
     customer_id = new_customer["customer_id"]
@@ -151,6 +162,7 @@ def test_patch_customer_parametrized(new_customer, auth_token, update_data, fiel
     assert type(customer) == dict
 
 
+@handle_requests_exceptions
 def test_delete_customer(new_customer, auth_token):
     """Test DELETE customer"""
     customer_id = new_customer["customer_id"]
