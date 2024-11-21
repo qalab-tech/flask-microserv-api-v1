@@ -1,14 +1,22 @@
 import requests
-import functools
+from functools import wraps
 
 
 def handle_requests_exceptions(func):
     """Requests Exceptions handle decorator"""
 
-    @functools.wraps(func)
+    @wraps(func)
     def wrapper(*args, **kwargs):
         try:
-            return func(*args, **kwargs)
+            result = func(*args, **kwargs)
+            # If it is a generator (a fixture with yield)
+            if hasattr(result, "__iter__") and not isinstance(result, (str, bytes, dict, list)):
+                try:
+                    yield from result
+                finally:
+                    if hasattr(result, "close"):
+                        result.close()
+            return result
         except requests.exceptions.Timeout:
             raise AssertionError("Request timed out")
         except requests.exceptions.ConnectionError:
