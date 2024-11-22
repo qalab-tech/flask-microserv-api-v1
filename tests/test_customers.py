@@ -1,6 +1,7 @@
 import requests
 import pytest
 from tests.utils.decorators import handle_requests_exceptions
+from app.repositories.customer_repository import fetch_customer
 import os
 from dotenv import load_dotenv
 
@@ -60,6 +61,10 @@ def test_create_customer(new_customer_data, auth_token):
     assert "customer_id" in customer
     assert customer["name"] == new_customer_data["name"]
     assert customer["address"] == new_customer_data["address"]
+    # Check data in Postgres database
+    db_data = fetch_customer(customer["customer_id"])
+    assert db_data.name == new_customer_data["name"]
+    assert db_data.address == new_customer_data["address"]
     # Delete new created customer
     requests.delete(f"{BASE_URL}/{customer['customer_id']}", headers=headers)
 
@@ -107,6 +112,10 @@ def test_update_customer(new_customer, new_customer_data, auth_token):
     customer = response.json()
     assert customer["name"] == updated_data["name"]
     assert customer["address"] == updated_data["address"]
+    # Check updated data in Postgres database
+    db_data = fetch_customer(updated_data["customer_id"])
+    assert db_data.name == updated_data["name"]
+    assert db_data.address == updated_data["address"]
 
 
 @pytest.mark.parametrize("update_data, field, new_value", [
