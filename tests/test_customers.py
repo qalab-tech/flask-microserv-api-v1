@@ -50,7 +50,7 @@ def test_head(auth_token):
 
 
 @handle_requests_exceptions
-def test_create_customer(new_customer_data, auth_token):
+def test_create_customer(new_customer_data, auth_token, db_connection):
     """Test create new customer"""
     headers = {"Authorization": auth_token}
     response = requests.post(BASE_URL, json=new_customer_data, headers=headers)
