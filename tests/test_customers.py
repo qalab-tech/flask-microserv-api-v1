@@ -95,7 +95,7 @@ def test_get_customer(new_customer, auth_token):
 
 
 @handle_requests_exceptions
-def test_update_customer(new_customer, new_customer_data, auth_token):
+def test_update_customer(new_customer, new_customer_data, auth_token, db_connection):
     """Test UPDATE customer"""
     customer_id = new_customer["customer_id"]
     headers = {"Authorization": auth_token}
@@ -103,18 +103,24 @@ def test_update_customer(new_customer, new_customer_data, auth_token):
         "name": new_customer_data["name"],
         "address": new_customer_data["address"]
     }
+
+    # Send PUT request to update customer
     response = requests.put(f"{BASE_URL}/{customer_id}", json=updated_data, headers=headers)
     assert response.status_code == 200
     assert response.headers['Content-Type'] == 'application/json'
+
+    # Check API response
     updated_customer = response.json()
     assert updated_customer["name"] == updated_data["name"]
     assert updated_customer["address"] == updated_data["address"]
-    # Additional data update check
-    response = requests.get(f"{BASE_URL}/{customer_id}", headers=headers)
-    assert response.status_code == 200
-    customer = response.json()
-    assert customer["name"] == updated_data["name"]
-    assert customer["address"] == updated_data["address"]
+
+    # Verify in the database
+    cursor = db_connection.cursor()
+    cursor.execute("SELECT name, address FROM customers WHERE customer_id = %s", (customer_id,))
+    db_customer = cursor.fetchone()  # Example: ('Updated Name', 'Updated Address')
+    assert db_customer is not None, "Customer not found in database"
+    assert db_customer[0] == updated_data["name"]
+    assert db_customer[1] == updated_data["address"]
 
 
 @pytest.mark.parametrize("update_data, field, new_value", [
@@ -122,23 +128,35 @@ def test_update_customer(new_customer, new_customer_data, auth_token):
     ({"address": "New Address 123"}, "address", "New Address 123")  # TestCase: patch address
 ])
 @handle_requests_exceptions
-def test_patch_customer_parametrized(new_customer, auth_token, update_data, field, new_value):
+def test_patch_customer_parametrized(new_customer, auth_token, update_data, field, new_value, db_connection):
     """Test PATCH customer with parameterized cases for updating name or address"""
     customer_id = new_customer["customer_id"]
     headers = {"Authorization": auth_token}
+
+    # Send PATCH request to update customer
     response = requests.patch(f"{BASE_URL}/{customer_id}", json=update_data, headers=headers)
     assert response.status_code == 200
     assert response.headers['Content-Type'] == 'application/json'
+
+    # Check API response
     updated_customer = response.json()
     assert updated_customer[field] == new_value
-    response = requests.get(f"{BASE_URL}/{customer_id}", headers=headers)
-    customer = response.json()
-    assert response.status_code == 200
-    assert type(customer) == dict
+
+    # Verify in the database
+    cursor = db_connection.cursor()
+    cursor.execute("SELECT name, address FROM customers WHERE customer_id = %s", (customer_id,))
+    db_customer = cursor.fetchone()  # Example: ('Original Name', 'New Address 123') or ('Updated Name', 'Original Address')
+    assert db_customer is not None, "Customer not found in database"
+
+    # Check the updated field
+    if field == "name":
+        assert db_customer[0] == new_value  # Check updated name
+    elif field == "address":
+        assert db_customer[1] == new_value  # Check updated address
 
 
 @handle_requests_exceptions
-def test_delete_customer(new_customer, auth_token):
+def test_delete_customer(new_customer, auth_token, db_connection):
     """Test DELETE customer"""
     customer_id = new_customer["customer_id"]
     headers = {"Authorization": auth_token}
@@ -148,3 +166,7 @@ def test_delete_customer(new_customer, auth_token):
     # Check that customer is deleted
     response = requests.get(f"{BASE_URL}/{customer_id}", headers=headers)
     assert response.status_code == 404
+    # Verify in database
+    cursor = db_connection.cursor()
+    cursor.execute("SELECT * FROM customers WHERE customer_id = %s", (customer_id,))
+    assert cursor.fetchone() is None
