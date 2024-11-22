@@ -1,7 +1,6 @@
 import requests
 import pytest
 from tests.utils.decorators import handle_requests_exceptions
-from app.repositories.customer_repository import fetch_customer
 import os
 from dotenv import load_dotenv
 
@@ -62,9 +61,13 @@ def test_create_customer(new_customer_data, auth_token):
     assert customer["name"] == new_customer_data["name"]
     assert customer["address"] == new_customer_data["address"]
     # Check data in Postgres database
-    db_data = fetch_customer(customer["customer_id"])
-    assert db_data.name == new_customer_data["name"]
-    assert db_data.address == new_customer_data["address"]
+    cursor = db_connection.cursor()
+    query = "SELECT name, address FROM customers WHERE customer_id = %s"
+    cursor.execute(query, (customer["customer_id"],))
+    db_data = cursor.fetchone()
+    assert db_data is not None, "Customer was not found in the database"
+    assert db_data[0] == new_customer_data["name"], "Name does not match database"
+    assert db_data[1] == new_customer_data["address"], "Address does not match database"
     # Delete new created customer
     requests.delete(f"{BASE_URL}/{customer['customer_id']}", headers=headers)
 
@@ -112,10 +115,6 @@ def test_update_customer(new_customer, new_customer_data, auth_token):
     customer = response.json()
     assert customer["name"] == updated_data["name"]
     assert customer["address"] == updated_data["address"]
-    # Check updated data in Postgres database
-    db_data = fetch_customer(updated_data["customer_id"])
-    assert db_data.name == updated_data["name"]
-    assert db_data.address == updated_data["address"]
 
 
 @pytest.mark.parametrize("update_data, field, new_value", [

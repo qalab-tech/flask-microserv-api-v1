@@ -1,4 +1,5 @@
 import pytest
+import psycopg2
 import requests
 import os
 from faker.proxy import Faker
@@ -7,12 +8,21 @@ from dotenv import load_dotenv
 # Load configuration from .env file
 load_dotenv()
 
+# Create Faker Object for fake customer data
 fake = Faker()
 
-# Flask microservice Base URL
-
+# Load ENVs
 BASE_URL = os.getenv("CUSTOMERS_BASE_URL")
 AUTH_BASE_URL = os.getenv("AUTH_BASE_URL")
+CUSTOMERS_DATABASE_URL = os.getenv("CUSTOMERS_DATABASE_URL")
+
+
+@pytest.fixture(scope="function")
+def db_connection():
+    """Get database connection"""
+    connection = psycopg2.connect(CUSTOMERS_DATABASE_URL)
+    yield connection
+    connection.close()
 
 
 @pytest.fixture(scope="session")
