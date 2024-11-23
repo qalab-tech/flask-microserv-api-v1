@@ -15,10 +15,10 @@ AUTH_BASE_URL = os.getenv("AUTH_BASE_URL")
 @handle_requests_exceptions
 def test_options_customers(auth_token):
     """Test OPTIONS customers endpoint"""  # Expected response example
-    expected_methods = 'OPTIONS, GET, POST, HEAD'
+    # expected_methods = 'OPTIONS, GET, POST, HEAD'
     headers = {"Authorization": auth_token}
     response = requests.options(BASE_URL, headers=headers)
-    connection = response.headers['Connection']  # Convert both strings to sets and compare
+    # connection = response.headers['Connection']  # Convert both strings to sets and compare
     assert response.status_code == 200
     # assert connection == 'keep-alive'
     assert response.headers['Content-Type'] == 'text/html; charset=utf-8'
@@ -145,7 +145,7 @@ def test_patch_customer_parametrized(new_customer, auth_token, update_data, fiel
     # Verify in the database
     cursor = db_connection.cursor()
     cursor.execute("SELECT name, address FROM customers WHERE customer_id = %s", (customer_id,))
-    db_customer = cursor.fetchone()  # Example: ('Original Name', 'New Address 123') or ('Updated Name', 'Original Address')
+    db_customer = cursor.fetchone()
     assert db_customer is not None, "Customer not found in database"
 
     # Check the updated field
@@ -163,9 +163,11 @@ def test_delete_customer(new_customer, auth_token, db_connection):
     response = requests.delete(f"{BASE_URL}/{customer_id}", headers=headers)
     assert response.status_code == 200
     assert response.headers['Content-Type'] == 'application/json'
+
     # Check that customer is deleted
     response = requests.get(f"{BASE_URL}/{customer_id}", headers=headers)
     assert response.status_code == 404
+
     # Verify in database
     cursor = db_connection.cursor()
     cursor.execute("SELECT * FROM customers WHERE customer_id = %s", (customer_id,))
