@@ -1,12 +1,16 @@
 import requests
 from functools import wraps
+from typing import Callable, TypeVar, Any
+
+# Define a generic type for the function
+F = TypeVar('F', bound=Callable[..., Any])
 
 
-def handle_requests_exceptions(func):
+def handle_requests_exceptions(func: F) -> F:
     """Requests Exceptions handle decorator"""
 
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         try:
             return func(*args, **kwargs)
         except requests.exceptions.Timeout:
@@ -18,4 +22,4 @@ def handle_requests_exceptions(func):
         except Exception as err:
             raise AssertionError(f"Unexpected error occurred: {err}")
 
-    return wrapper
+    return wrapper  # type: ignore
