@@ -8,6 +8,9 @@ from flask_restx import Api, Resource, fields, Namespace
 from functools import wraps
 import jwt
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Logger setup
 logger = setup_logger("customer_controller")
