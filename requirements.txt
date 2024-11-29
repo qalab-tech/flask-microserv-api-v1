@@ -2,6 +2,7 @@ gunicorn
 faker
 flask
 flask_restx
+prometheus-flask-exporter
 pyyaml
 pyjwt
 python-dotenv
