@@ -102,18 +102,19 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     ports:
-      - "9090:9090"  # Открываем порт для доступа к интерфейсу Prometheus
+      - "9090:9090"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro  # Монтируем файл конфигурации
-      - prometheus_data:/prometheus  # Для хранения данных Prometheus
-    restart: unless-stopped  # Автоматический рестарт контейнера
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro  # Configuration file mount point
+      - prometheus_data:/prometheus  # for Prometheus data
+    restart: unless-stopped  # automatic container restart
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
     networks:
-      - monitoring
+      - backend_network
+#      - monitoring
 volumes:
   postgres_data:
   prometheus_data:
@@ -122,5 +123,5 @@ volumes:
 networks:
   backend_network:
     driver: bridge
-  monitoring:
-    driver: bridge
+#  monitoring:
+#    driver: bridge
