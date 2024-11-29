@@ -11,4 +11,4 @@ scrape_configs:
     metrics_path: "/metrics"
     static_configs:
       - targets:
-          - "web:5001"  # Customers service monitoring
+          - "web:5000"  # Customers service monitoring
