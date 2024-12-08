@@ -92,6 +92,7 @@ class Customer(Resource):
     @customers_ns.response(404, 'Customer not found')
     @log_duration
     @token_required
+    @redis_cache(redis_key="customer:by_id", ttl=3600)
     def get(self, customer_id):
         """GET customer by ID"""
         customer = get_customer_by_id(customer_id)
