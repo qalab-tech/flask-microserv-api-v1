@@ -136,12 +136,33 @@ services:
         max-file: "3"
     networks:
       - backend_network
+# RabbitMQ Service
+  rabbitmq:
+    image: arm64v8/rabbitmq:3-management  # Образ, совместимый с ARM, включает панель управления
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"  # Основной порт RabbitMQ
+      - "15672:15672"  # Веб-интерфейс управления (RabbitMQ Management)
+    environment:
+      RABBITMQ_DEFAULT_USER: admin  # Логин по умолчанию
+      RABBITMQ_DEFAULT_PASS: password  # Пароль по умолчанию
+    restart: unless-stopped  # automatic container restart
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - backend_network
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq  # Хранение данных RabbitMQ (персистентность)
 
 volumes:
   postgres_data:
   prometheus_data:
     driver: local
   grafana-data:
+  rabbitmq_data:
 
 
 networks:
