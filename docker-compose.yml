@@ -40,7 +40,26 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-
+  # Tasks FastAPI Service
+  tasks:
+    build:
+      context: /home/dgornostaev/microserv-todo-fastapi
+      dockerfile: Dockerfile
+    image: task-api-v1
+    environment:
+      - TZ=Europe/Moscow
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - backend_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
   # Postgres Database
   db:
     image: postgres:17
@@ -138,11 +157,11 @@ services:
       - backend_network
 # RabbitMQ Service
   rabbitmq:
-    image: rabbitmq:3.9-management  # Образ, совместимый с ARM, включает панель управления
+    image: rabbitmq:3.9-management
     container_name: rabbitmq
     ports:
-      - "5672:5672"  # Основной порт RabbitMQ
-      - "15672:15672"  # Веб-интерфейс управления (RabbitMQ Management)
+      - "5672:5672"  # RabbitMQ main port
+      - "15672:15672"  # RabbitMQ management web-interface
     environment:
       RABBITMQ_DEFAULT_USER: admin  # Логин по умолчанию
       RABBITMQ_DEFAULT_PASS: password  # Пароль по умолчанию
