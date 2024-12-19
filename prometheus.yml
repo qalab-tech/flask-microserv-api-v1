@@ -12,3 +12,8 @@ scrape_configs:
     static_configs:
       - targets:
           - "web:5000"  # Customers service monitoring
+
+  - job_name: 'fastapi'
+    static_configs:
+        - targets: [ 'tasks:8000' ]  # Task service monitoring
+

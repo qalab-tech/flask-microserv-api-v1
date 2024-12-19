@@ -48,6 +48,7 @@ services:
     image: task-api-v1
     environment:
       - TZ=Europe/Moscow
+      - ENV=docker
     ports:
       - "8000:8000"
     depends_on:
