@@ -5,11 +5,19 @@ from app.logger_config import setup_logger
 from app.performance_monitor import log_duration
 from dotenv import load_dotenv
 
-load_dotenv()
-
 logger = setup_logger("db_connection")
 
+# Loading environment variables depending on the environment
+if os.getenv("ENV") == "docker":
+    load_dotenv(".env.docker")
+else:
+    load_dotenv(".env.local")
+
 DATABASE_URL = os.getenv("CUSTOMERS_DATABASE_URL")
+
+if DATABASE_URL is None:
+    logger.error("CUSTOMERS_DATABASE_URL is not set in the environment variables, please check the .env.docker file")
+    raise ValueError("CUSTOMERS_DATABASE_URL is not set in the environment variables.")
 
 # Init Pool
 try:
