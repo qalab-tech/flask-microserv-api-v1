@@ -21,9 +21,9 @@ else:
 REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = os.getenv("REDIS_PORT")
 
-if REDIS_HOST or REDIS_PORT is None:
-        logger.error("REDIS connection is not set in the environment variables, please check the .env.docker file")
-        raise ValueError("REDIS connection is not set in the environment variables.")
+if REDIS_HOST is None or REDIS_PORT is None:
+    logger.error("REDIS connection is not set in the environment variables, please check the .env.docker file")
+    raise ValueError("REDIS connection is not set in the environment variables.")
 
 
 cache = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
