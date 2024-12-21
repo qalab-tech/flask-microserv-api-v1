@@ -5,7 +5,7 @@ import os
 from faker.proxy import Faker
 from dotenv import load_dotenv
 
-# Load configuration from .env file
+# Load configuration from .env.docker file
 load_dotenv()
 
 # Create Faker Object for fake customer data

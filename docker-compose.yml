@@ -7,6 +7,7 @@ services:
     image: auth-service
     environment:
       - TZ=Europe/Moscow
+      - ENV=docker
     ports:
       - "5001:5001"
     depends_on:
@@ -27,6 +28,7 @@ services:
       dockerfile: Dockerfile
     image: customer-api-v1
     environment:
+      - ENV=docker
       - TZ=Europe/Moscow
     ports:
       - "5000:5000"
@@ -164,8 +166,8 @@ services:
       - "5672:5672"  # RabbitMQ main port
       - "15672:15672"  # RabbitMQ management web-interface
     environment:
-      RABBITMQ_DEFAULT_USER: admin  # Логин по умолчанию
-      RABBITMQ_DEFAULT_PASS: password  # Пароль по умолчанию
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password
     restart: unless-stopped  # automatic container restart
     logging:
       driver: "json-file"
