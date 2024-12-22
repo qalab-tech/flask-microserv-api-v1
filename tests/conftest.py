@@ -5,17 +5,20 @@ import os
 from faker.proxy import Faker
 from dotenv import load_dotenv
 
-# Load configuration from .env.docker file
-load_dotenv()
+# Loading environment variables depending on the environment
+if os.getenv("ENV") == "docker":
+    load_dotenv(".env.docker")
+else:
+    load_dotenv(".env.local")
 
-# Create Faker Object for fake customer data
-fake = Faker()
 
 # Load ENVs
 BASE_URL = os.getenv("CUSTOMERS_BASE_URL")
 AUTH_BASE_URL = os.getenv("AUTH_BASE_URL")
 CUSTOMERS_DATABASE_URL = os.getenv("CUSTOMERS_DATABASE_URL")
 
+# Create Faker Object for fake customer data
+fake = Faker()
 
 @pytest.fixture(scope="function")
 def db_connection():
